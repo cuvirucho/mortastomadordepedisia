@@ -1,0 +1,1543 @@
+*{
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+.contepricipalia{
+ background: linear-gradient(180deg, #0f0f1f, #4c01d6);
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  color: aliceblue;
+}
+.conetecarita{
+  background-color: rgba(165, 42, 42, 0);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+    overflow: hidden;
+    height: 60%;
+}
+/*onda de voz */
+.robot-contenedor {
+ background-color: rgba(6, 139, 255, 0);
+width: 90%;
+display: flex;
+justify-content: center;
+align-items: center;
+position: relative;
+height: auto;
+padding: 10px;
+  animation: flotar 2s ease-in-out infinite;
+
+}
+
+.onda-sobre-cara {
+position: absolute;
+  pointer-events: none;
+  z-index: 10;     /* para que quede encima seguro */
+  top: 58%;
+}
+
+/* Animación */
+@keyframes flotar {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-15px); }
+  100% { transform: translateY(0); }
+}
+/*pedili de la ia */
+.conteordens{
+  background-color: rgba(0, 255, 255, 0);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.contelitadepdis{
+  background-color: rgba(153, 205, 50, 0);
+  width: 100%;
+  display: flex;
+  overflow: hidden;
+  overflow-x: auto;
+  gap: 20px;
+  justify-content: start;
+align-items: center;
+padding: 10px;
+}
+
+.carpefid{
+  background-color:#4c01d6;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  border-radius: 10px;
+  min-width: 250px;
+  max-width: 350px;
+  border: solid 1px rgba(255, 255, 255, 0.178);
+}
+.nobretulo{
+  background-color: rgba(14, 216, 196, 0.034);
+    font-size: clamp(1.3rem, 1vw, 2.5rem);
+text-transform: capitalize;
+text-align: center;
+  }
+
+  .contdeta{
+    background-color: rgba(121, 22, 5, 0);
+width: 100%;
+display: flex;
+gap: 10px;
+justify-content: space-around;
+align-items: center;
+margin-top: 10px;
+flex-wrap: wrap;
+  }
+
+.detitem{
+  background-color:   rgba(1, 1, 189, 0.089);
+      font-size: clamp(1.2rem, 1vw, 2.5rem);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    box-shadow: 
+    0px 2px 0px rgba(255, 254, 254, 0.103)
+    ;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 10px;
+   
+
+}
+.tulopedis{
+  background-color: rgba(153, 205, 50, 0);
+   font-size: clamp(1.8rem, 1vw, 2.5rem);
+}
+/*btn eliniar  un pedios */
+.btnEliminar {
+  background-color: rgba(220, 20, 60, 0);
+  color: white;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  margin-left: -100%;
+  margin-top: -15px;
+  transition: background-color 0.2s;
+  margin-bottom: -15px;
+}
+
+/*auradetras dl roobot*/
+.aura-reactiva {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(183, 60, 255), transparent 70%);
+
+  opacity: 0;
+  pointer-events: none;
+  
+  transition: transform 0.1s ease, opacity 0.1s ease;
+}
+.cararobot{
+  background-color: rgba(0, 255, 255, 0);
+    position: relative; /* ✅ Muy importante */
+  display: inline-block;
+  z-index: 1; /* La carita va encima */
+}
+.envoltorio-carita {
+  position: relative; /* ✅ Muy importante */
+  display: inline-block;
+  z-index: 1; /* La carita va encima */
+}
+
+
+
+/*HOME*/
+
+
+
+.contfllhome {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  align-items: center;
+  color: aliceblue;
+  background-color: #00b1e700;
+}
+
+.HEDER{
+background-color: #c9d61300;
+width: 100%;
+}
+
+
+
+
+
+.LOGOIMG{
+  background-color: blueviolet;
+  width: 100%;
+  object-fit: scale-down;
+  height: 50px;
+}
+.bodyhome{
+  background-color: #d6560100;
+  height: 79.5vh;
+  width: 100%;
+  overflow-y: auto;
+}
+.mesasaconte{
+  background-color: rgba(255, 255, 0, 0);
+  width: 100%;
+  height: auto;
+   display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 columnas */
+  gap: 20px; /* espacio entre las mesas (opcional) */
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+.mesacard{
+  background-color: rgba(0, 255, 255, 0);
+  width: 100%;
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center ;
+  align-items: center;
+  border-radius: 0.8rem;
+  border: 2px solid transparent;
+  padding: 10px;
+  gap: 10PX;
+  border-radius: 10px;
+  text-align: center;
+  transition: 0.3s;
+  box-shadow: 0 0 10px rgba(114, 6, 255, 0.5);
+}
+
+.mesa-con-pedidos {
+  border: 4px solid #6f00ff; /* cambia el color como quieras */
+  box-shadow: 0 0 10px rgba(0, 128, 0, 0.5);
+}
+
+.badge-pedido {
+  background-color: green;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*fin home*/
+
+/*Mesas*/
+.header2 {
+  background-color: #6f00ff;
+  text-align: center;
+}
+.header2 {
+  background-color: #6f00ff;
+  text-align: center;
+  width: 100%;
+}
+
+.tilomes{
+  background-color: rgba(9, 236, 160, 0);
+  font-size: clamp(1.5rem, 1vw, 2.5rem);
+  color: #6f00ff;
+  margin-bottom: -10px;
+
+}
+.logo-img {
+  max-width: 150px;
+  height: auto;
+}
+
+.pedido-sectionFULL {
+ background: #0670e200;
+ height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem;
+  width: 100%;
+  min-height: 79.1vh;
+}
+
+.pedido-contenido {
+  margin-top: 1rem;
+  background-color: #26c24a00;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+    overflow: hidden; /* evita que crezca más del espacio disponible */
+}
+
+
+
+.lista-pedidos {
+    display: flex;
+  flex-direction: column;
+  list-style: none;
+background-color: #ffe60000;
+width: 100%;
+   max-height: 500px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  border-radius: 8px;
+  gap: 1rem;
+
+}
+
+.pedido-item {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem ;
+  background-color: #f9f8fa;
+    border-radius: 18px;
+    border: solid 3px blueviolet;
+  box-shadow: -4px 4px 3px rgba(0, 0, 0, 0.425);
+    position: relative;
+}
+
+
+
+.respuestas-lista {
+ 
+  padding-left: 15px;
+  font-size: clamp(1.1rem, 1vw, 2.5rem);
+
+}
+
+.respuesta-item {
+  list-style-type:  circle;
+  margin-bottom: 5px;
+}
+
+.detalles-texto {
+  margin-top: 5px;
+  font-style: italic;
+
+  font-size: clamp(1.5rem, 1vw, 2.5rem);
+}
+
+
+
+
+.cotefnoypreci{
+  background-color: #a71d2b00;
+  display: flex;
+  font-size: clamp(1.5rem, 1vw, 2.5rem);
+  gap: 1rem;
+  text-transform: capitalize;
+
+}
+
+
+
+
+.total-texto {
+  font-weight: bold;
+  text-align: center;
+font-size: clamp(1.5rem, 1vw, 2.5rem);
+  color: #6f00ff;
+  margin-top: 18px;
+}
+
+.total-pagado {
+  font-weight: bold;
+  text-align: center;
+font-size: clamp(1rem, 1vw, 2.5rem);
+  color: #6f00ff;
+margin-top: 5px;
+}
+
+.total-restante {
+  font-weight: bold;
+  text-align: center;
+font-size: clamp(1rem, 1vw, 2.5rem);
+  color: #6f00ff;
+margin-top: 5px;
+}
+
+.btnfindpi{
+  background-color: blueviolet;
+  margin-top: 10px;
+  padding: 10px 20px;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+}
+
+
+
+
+
+.pedido-item {
+  background-color: white;
+  color: #6f00ff;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+}
+
+.pedido-item.activo {
+  background-color: blueviolet; /* Fondo cuando está seleccionado */
+  color: white; /* Texto cuando está seleccionado */
+
+}
+
+
+
+
+
+
+
+
+
+
+.acciones {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+  background-color: #07ffff00;
+}
+
+.pedido-vacio {
+  background-color: #ffffff;
+  padding: 1.9rem;
+  text-align: center;
+
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+
+margin-top: -20px;
+  font-size: clamp(1.5rem, 1vw, 2.5rem);
+  color: #6f00ff;
+}
+
+
+
+
+.btnx {
+  background-color: #007bff00;
+color: red;
+width: 10%;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  position: absolute;
+  top: 10px;
+  right: 3px;
+}
+
+
+
+
+
+
+
+.btn {
+  background-color: blueviolet;
+  
+  color: rgb(255, 255, 255);
+  padding: 0.6rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+
+.btn.eliminar {
+  background-color: #dc3545;
+}
+
+.btn.eliminar:hover {
+  background-color: #a71d2a;
+}
+
+.btn.agregar {
+  background-color: #28a74600;
+  color:#6f00ff;
+}
+
+
+
+.btn.pagado {
+  background-color: #ffc10700;
+  color:#6f00ff;
+}
+
+
+
+
+ .modal-overlay {
+          position: fixed;
+          top: 0; left: 0; right: 0; bottom: 0;
+          background: rgba(0,0,0,0.5);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .modal {
+          background: #6f00ff;
+          padding: 20px;
+          border-radius: 8px;
+          text-align: center;
+            color: white;
+  padding: 0.6rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+          min-width: 250px;
+        }
+        .modal button {
+          margin: 5px;
+          padding: 8px 12px;
+background-color: #007bff00;
+            color: white;
+  padding: 0.6rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+        }
+        .cerrar {
+          background: #ccc;
+        }
+
+
+.overlay-pagado {
+  text-decoration: underline;
+  font-weight: bold;
+  padding: 6px 12px;
+  border-radius: 6px;
+  pointer-events: none; /* para que no bloquee los clics */
+}
+
+/*fin de mesas*/
+
+
+
+
+/*tomadot de pedidosr*/
+
+.contefull{
+background-color: rgba(0, 255, 255, 0);
+display: flex;
+flex-direction: column;
+justify-content: start;
+align-items: center;  
+width: 100%;
+overflow: hidden;
+height: 100vh;
+}
+
+
+
+
+.contepatps{
+  background-color: rgba(102, 204, 0, 0);
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+
+/* Lista de desayunos */
+.lista-desayunos{
+background-color: #3694ff00;
+width: 100%;
+display: flex;
+padding: 10px;
+min-height: 13rem;
+gap: 15px;
+overflow-x: auto;
+}
+
+.plato-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  border-radius: 10px;
+  padding: 15px;  
+  height: 100%;
+  background-color: #9e070700;
+  color: #6f00ff;
+  box-shadow: 0px 2px 5px rgba(179, 12, 245, 0.521);
+  min-width: 270px;
+  border: 3px solid   #a06ae6;
+}
+
+/* Nombre del plato */
+ul li p strong {
+    font-size: clamp(1.5rem, 1vw, 2.5rem);
+  color: #6f00ff;
+  text-transform: capitalize;
+}
+
+.tiosdesyunos {
+  font-size: clamp(1.8rem, 1vw, 2.5rem);
+  background-color: #ffffff;
+  color:blueviolet;
+  text-transform: capitalize;
+text-align: center;
+ border-radius:   10rem;
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  width: 90%;
+  box-shadow: 
+    0px 2px 10px rgba(5, 5, 5, 0.5)
+    ;
+}
+.tiotigrillo {
+  font-size: clamp(1.8rem, 1vw, 2.5rem);
+  background-color: #ffffff;
+  color: blueviolet;
+  text-transform: capitalize;
+text-align: center;
+ border-radius:   10rem;
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  width: 90%;
+
+    box-shadow: 
+    0px 2px 10px rgba(5, 5, 5, 0.5)
+    ;
+}
+
+/* Contenedor de cantidad */
+.cantidad-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(12, 209, 209, 0);
+}
+.cari{
+  background-color: rgba(137, 43, 226, 0);
+  color: #a06ae6;
+  font-size: clamp(1.5rem, 1vw, 2.5rem);
+}
+
+.cantidad-container button {
+  background-color: #ff990000;
+  color: #a06ae6;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.cantidad-container button:hover {
+  color: #e68900;
+}
+
+.cantidad-container span {
+  font-size: 1.1rem;
+  font-weight: bold;
+  min-width: 25px;
+  text-align: center;
+}
+
+/* Input para notas */
+.nota-input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 8px;
+  border: 3px solid   #a06ae6;
+  border-radius: 60px;
+  font-size: 0.95rem;
+  text-align: center;
+  outline: none;
+    color: #6f00ff;
+  transition: border-color 0.3s ease;
+}
+
+.nota-input:focus {
+  border-color: #ff9800;
+}
+
+.btnagrag {
+  background-color: #00ff4c00;
+  color: #a06ae6;
+  padding: 0rem;
+  border: none;
+  margin-top: 15px;
+  text-decoration: none;
+  font-style: italic;
+width: 100%;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 1px;
+
+}
+
+
+
+.btnagrag.eliminar {
+  background-color: #dc3545;
+}
+
+.btnagrag.eliminar:hover {
+  background-color: #a71d2a;
+}
+
+.btnagrag.agregar {
+  background-color: #28a74600;
+  color:#6f00ff;
+}
+
+.btnagrag.pagado {
+  background-color: #ffc10700;
+  color:#6f00ff;
+}
+
+
+
+/* Barra de búsqueda */
+.barra-busqueda {
+  width: 90%;
+  max-width: 500px;
+  padding: 10px 15px;
+  margin: 10px auto;
+  display: block;
+  font-size: 16px;
+  border: 2px solid #6f00ff;
+  border-radius: 25px;
+  outline: none;
+  transition: 0.3s ease;
+}
+
+.barra-busqueda:focus {
+  border-color: #ffc400; /* Color al hacer foco */
+  box-shadow: 0 0 8px rgba(255, 127, 80, 0.3);
+}
+
+/* Que quede fija en la parte superior */
+
+.coterbrbu{
+background-color: rgb(255, 255, 255);
+position: sticky;
+top: 0;
+z-index: 10;
+width: 100%;
+padding: 10px;
+display: flex;
+border-radius:  0  0 10px 10px;
+}
+
+
+.indicadordepds{
+  background-color:#6f00ff;
+  border-radius: 300rem;
+  color:#6f00ff;
+  padding: 0px;
+ 
+  padding-left: 10px;
+  padding-right:10px;
+}
+
+.barra-busqueda {
+
+  top: 0;
+  background: white;
+  z-index: 10;
+}
+
+
+.btncarrito{
+  background-color: #ffffff00;
+  border: none;
+  font-size: 1.2rem;
+}
+
+.brdpltyo{
+ text-transform: capitalize;
+ margin-right: 5px
+}
+.btnenviarpedo{
+  color: #ffffff;
+
+padding: 10px 20px;
+border: none;
+border-radius: 5rem;
+background-color: #6f00ff;
+}
+
+
+
+
+
+
+.conteordene {
+  margin-top: 20px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #6f00ff;
+  border-radius: 10px;
+  background-color: rgba(111, 0, 255, 0.1);
+}
+.mesascontainerpadre {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+}
+
+/*fin de tomdorde pedios*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*barra de navegacio */
+/* Navar.css */
+
+.bottom-nav {
+  height: 64px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background:blueviolet;
+  color: #ffffff;
+  width: 90%;
+  padding: 10px;
+  margin-top: 0rem;
+  margin-bottom: 0.2rem;
+  border-radius: 5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+}
+
+
+.itemnab{
+  background-color: rgba(183, 60, 255, 0);
+  color: #ffffff;
+    font-size: clamp(1.1rem, 1vw, 2.5rem);
+}
+
+
+
+
+
+
+/*fin de barra de navegacion */
+/*pedidoweb*/
+.contfulpediwqeb{
+  background-color: rgba(255, 0, 0, 0);
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+    font-size: clamp(1.5rem, 1vw, 2.5rem);
+  color: #6f00ff;
+}
+
+
+
+
+
+/* Contenedor */
+.pedconte {
+  background-color: rgba(8, 165, 165, 0);
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  overflow-y: auto;
+
+}
+/* Título */
+.titulo {
+  text-align: center;
+  font-size: clamp(2rem, 2vw, 2rem);
+  font-weight: bold;
+  color: blueviolet;
+
+}
+
+
+
+
+/*barra de busqueda */
+.busquedacontainer{
+  background-color: #007bff00;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  gap: 10px;
+}
+
+
+.btbecan{
+  background-color: #6f00ff;
+  
+  padding: 10px ;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+}
+
+
+.busquedainput {
+  width: 80%;
+  max-width: 400px;
+  padding: 10px 15px;
+  font-size: 1rem;
+  border: 2px solid blueviolet;
+  border-radius: 25px;
+  outline: none;
+  color: blueviolet;
+  transition: border-color 0.3s ease;
+}
+
+
+
+
+
+
+     .menu-tipos {
+         padding: 10px;
+          background-color: #d9dc3500;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 10px;
+          width: 100%;
+          max-width: 30rem;
+          overflow-x: auto;
+          justify-content: space-around;
+        }
+
+
+
+
+    .tipobtn {
+       
+          font-size: clamp(0.7rem,1.2vw,5rem);
+          padding: 8px 16px;
+          border: none;
+          border-radius: 20px;
+          cursor: pointer;
+          background-color: #eee;
+          color: blueviolet;
+          font-weight: bold;
+          transition: all 0.2s;
+          text-transform: capitalize;
+           box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.178);
+        }
+        .btnactivos {
+          background-color: blueviolet;
+          color: white;
+            padding: 12px;
+             box-shadow: 1px 1px 5px rgba(99, 11, 199, 0.63);
+        }
+
+
+
+
+/* Card */
+.pedido-card {
+  background: #be0d0d00;
+  padding: 20px;
+  width: 100%;
+  max-width: 32rem;
+  border-radius: 16px;
+  box-shadow: 0 2px 5px rgba(38, 1, 44, 0.363);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+
+
+.idepdi{
+  color: blueviolet;
+    font-size: clamp(1rem, 2vw, 2rem);
+}
+
+
+
+
+
+
+
+.pedido-card:hover {
+
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+/* Header */
+.pedido-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.estado {
+  padding: 5px 12px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #fff;
+
+}
+.estado.aprobado { background: #4caf50; }
+.estado.pendiente { background: #ff9800; }
+.estado.entregado { background: blueviolet; }
+
+/* Botón ver más */
+.btn-ver-mas {
+  margin-top: 12px;
+  width: 100%;
+  padding: 10px;
+  box-shadow:  1px 1px 5px rgba(99, 11, 199, 0.63);
+  border: none;
+  border-radius: 10px;
+  color: blueviolet;
+  background-color: #007bff00;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-ver-mas:hover {
+  background: blueviolet;
+  color: white;
+}
+
+/* MODAL */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s;
+  width: 100%;
+  height: 100%;
+  overflow-y: none;
+}
+
+.modal-content {
+  background: #ffffff;
+  padding: 25px;
+    overflow-y: auto;
+  border-radius: 14px;
+  width: 90%;
+  max-height: 80vh;
+  max-width: 500px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+  animation: slideUp 0.3s ease-out;
+}
+.igopditex {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  color: rgb(172, 139, 202);
+}
+
+
+
+
+.modal-contenth2 {
+  margin-bottom: 15px;
+  color: rgba(43, 226, 98, 0.349);
+  background-color: #007bff;
+  text-align: center;
+}
+.modal-contenth3 {
+  margin-bottom: 15px;
+  color: blueviolet;
+  background-color: #0057b300;
+  text-align: center;
+    margin-top:20px ;
+      font-size: clamp(1.5rem, 2vw, 1.5rem);
+}
+
+.modal-contentp {
+  margin: 6px 0;
+  color: rgb(172, 139, 202);
+  font-size: clamp(1rem, 2vw, 1.5rem);
+}
+
+.modal-contentul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  text-transform: capitalize;
+  flex-direction: column;
+  gap: 10px;
+  background-color: #dc354600;
+}
+.modal-contentli {
+  background: #f5f7fa;
+  padding: 8px;
+    font-size: clamp(1.5rem, 2vw, 1.5rem);
+  border-radius: 8px;
+  box-shadow: 0px 0px 5px  rgb(172, 139, 202);
+  margin-bottom: 6px;
+    margin: 6px 0;
+  color: rgb(172, 139, 202);
+}
+.cantioprod{
+  font-size: clamp(1.5rem, 2vw, 1.2rem);
+  color: rgb(172, 139, 202);
+  background-color: #007bff00;
+display: flex;
+align-items: flex-start;
+justify-content: center;
+  margin-top: 5px;
+}
+.optiex{
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: rgb(172, 139, 202);
+  background-color: #007bff00;
+
+  margin-top: 5px;
+}
+
+
+
+
+
+.CONTEPEDIBTN {
+  display: flex;
+  justify-content: space-around;
+  background-color: rgba(0, 255, 255, 0);
+  width: 100%;
+  height: auto;
+  align-items: center;
+  padding: 10px;
+}
+
+
+/* Botón cerrar */
+.btn-cerrar {
+ 
+  padding: 10px 15px;
+ box-shadow:  1px 1px 5px rgba(99, 11, 199, 0.63);
+  border: none;
+  border-radius: 10px;
+  color: blueviolet;
+  font-weight: bold;
+  cursor: pointer;
+}
+.btn-cerrar:hover {
+  background: blueviolet;
+  color: white;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+
+
+
+
+
+        .imgbibe{
+background-color: rgba(0, 255, 255, 0);
+          width: 100%;
+          height: auto;
+         
+        
+        }
+
+
+
+        /*fin de pedidoweb*/
+
+
+
+
+        /*coparas en el local */
+
+   
+
+/* Contenedor principal */
+
+.contfllhomevop {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  align-items: center;
+  color: aliceblue;
+  background-color: #b5e70000;
+}
+
+
+.containercopras {
+ width: 100%;
+ background-color: #007bff00;
+ height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+}
+
+
+
+
+
+
+/* Tarjetas */
+.cardcopras {
+  background-color: #940f0f00;
+  border-radius: 12px;
+  padding: 20px;
+  width: 90%;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.363);
+  transition: transform 0.2s;
+}
+
+
+/* Titulos */
+.titlecopras {
+  margin-bottom: 15px;
+  color:blueviolet;
+  text-align: center;
+  font-size: clamp(1.5rem, 1vw, 2.5rem);
+}
+
+/* Formularios */
+.formcopara {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.inputCOP {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgb(169, 92, 241);
+  font-size: 16px;
+  outline: none;
+  transition: border 0.2s;
+}
+.input:focus {
+  border-color: #fffb00;
+}
+
+/* Botones */
+.btnacop {
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background-color:blueviolet;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+
+/* Botón de borrar */
+.btn-danger {
+  background-color: #dc3545;
+}
+.btn-danger:hover {
+  background-color: #a71d2a;
+}
+
+/* Lista de compras */
+.listascop{
+  list-style: none;
+  padding: 0;
+  background-color: rgba(0, 255, 255, 0);
+  width: 100%;
+display: flex;
+   overflow-x: auto;
+  gap: 15px;
+  justify-content: start;
+  align-items: center;
+padding: 10px;
+}
+.contelistacop{
+  background-color: #2e940f00;
+  width: 100%;
+
+  border-radius: 8px;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.compraitem {
+  background-color: #0150c700;
+  padding: 10px;
+  position: relative;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.589);
+  display: flex;
+  flex-direction: column;
+  color: #6f00ff;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: clamp(1.4rem, 1vw, 2.5rem);
+  text-align: center;
+  min-width: 10rem;
+  width: auto;
+  overflow-x: auto;
+}
+.totlcop{
+  background-color: #940f0f00;
+  font-size: clamp(1.5rem, 1vw, 2.5rem);
+  color: #6f00ff;
+  text-align: center;
+  margin-top: 35px;
+}
+
+.contebtnaogbto{
+  background-color: #a71d2b00;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px;
+}
+
+
+.conteitemcop{
+  background-color: #a71d2b00;
+  width: 100%;
+text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.btnelincpo{
+  background-color: #ffc40000;
+  position: absolute;
+  top: 0px;
+  right: 5px;
+  border: none;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;    
+}
+
+
+
+/*CAJA DE CIERRE */
+
+/* ===== Contenedor principal ===== */
+.contfllhomecaja {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100vh;
+background-color: #007bff00;
+ 
+  color: #333;
+}
+
+
+
+
+
+.contecajfu{
+  background-color: rgba(0, 139, 139, 0);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+
+  width: 100%;
+  height: 79.2vh;
+  overflow-y: auto;
+}
+
+
+
+.contedatscajas{
+  background-color: rgb(255, 255, 255);
+  position: sticky;
+  top: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: column;
+}
+/* ===== Encabezados ===== */
+
+
+.cajahome-subtitle {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #555;
+  margin: 0.5rem 0;
+}
+
+
+.totlcaja{
+  background-color: #940f0f00;
+  font-size: clamp(1.8rem, 1vw, 2.5rem);
+  color: blueviolet;
+  text-align: center;
+
+}
+
+
+
+/* ===== Totales ===== */
+.cajahome-total {
+  font-size: clamp(1.5rem, 1vw, 2.5rem);
+  font-weight: 600;
+  color: blueviolet;
+  margin: 0.5rem 0;
+}
+
+.cajahome-total.compra {
+  color: blueviolet;
+}
+
+.cajahome-total.caja {
+  color: blueviolet;
+  border-top: 2px solid rgb(191, 139, 240);
+  padding-top: 0.5rem;
+}
+
+/* ===== Botones ===== */
+.cajahomebutton {
+  color: #fff;
+  border: none;
+  padding: 0.7rem 1.2rem;
+  margin: 0.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+
+.cajahomebutton {
+  background: blueviolet;
+  font-size: clamp(1rem, 1vw, 2.5rem);
+}
+
+
+/* ===== Lista de pedidos ===== */
+
+
+.nopedidos {
+  font-size: clamp(1.5rem, 1vw, 2.5rem);
+  color: #9b72e9;
+  margin-top: 2rem;
+  text-align: center;
+}
+
+
+
+
+.cajahome-pedidos {
+  width: 100%;
+  list-style: none;
+  background-color: #af604c00;
+  padding: 1rem;
+  color: #896ad1;
+}
+
+.cajahome-pedido-item {
+  background: #fff;
+  margin-bottom: 0.8rem;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.479);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cajahome-pedido-item:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.cajahome-pedido-item strong {
+  color: #6f00ff;
+  text-transform: capitalize;
+  font-size: clamp(1rem, 1vw, 2.5rem);
+}
