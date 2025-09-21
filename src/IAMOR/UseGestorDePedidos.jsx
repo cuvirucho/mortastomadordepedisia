@@ -152,7 +152,7 @@ export const useGestorDePedidos = (
       } else {
         setSubitemActual(null);
         subitemActualRef.current = null;
-        hablarSeguro("Listo, he anotado todos los pedidos.");
+        hablarSeguro("Listo, he anotado todos los pedidos si deseas algo más solo dime o si es todo presiona el botón de enviar pedido y espera la magia.");
       }
     }
 

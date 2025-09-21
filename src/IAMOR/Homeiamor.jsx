@@ -45,26 +45,28 @@ const [platosComplejos, setPlatosComplejos] = useState({})
 
 
 const hablarSeguro = (mensaje) => {
-  // 1️⃣ Detener el reconocimiento si está activo
+  // 1️⃣ Detener reconocimiento antes de hablar
   if (reconocimiento.current && escuchandoRef.current) {
-    reconocimiento.current.stop(); // Pausamos el micrófono
+    reconocimiento.current.stop();
     setEscuchando(false);
     escuchandoRef.current = false;
   }
 
-  // 2️⃣ Llamamos a la función original de hablar
+  // 2️⃣ Hablar
   hablar(mensaje, vozSeleccionadaRef.current);
 
-  // 3️⃣ Esperamos a que termine de hablar para reiniciar reconocimiento
+  // 3️⃣ Esperar a que termine de hablar
   const checkHablando = setInterval(() => {
     if (!window.speechSynthesis.speaking) {
-      clearInterval(checkHablando); // Terminamos el intervalo
-      // 4️⃣ Reiniciamos el micrófono
-      reconocimiento.current.start();
-      setEscuchando(true);
-      escuchandoRef.current = true;
+      clearInterval(checkHablando);
+      // Reiniciar reconocimiento
+      if (!escuchandoRef.current) {
+        reconocimiento.current.start();
+        setEscuchando(true);
+        escuchandoRef.current = true;
+      }
     }
-  }, 100); // revisamos cada 100ms si terminó de hablar
+  }, 100);
 };
 
 
@@ -137,55 +139,63 @@ useEffect(() => {
   });
 
   // ✅ Configurar reconocimiento de voz una vez
-  useEffect(() => {
-    if (!vozLista) return;
+useEffect(() => {
+  if (!vozLista) return;
 
-    reconocimiento.current = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    reconocimiento.current.lang = "es-ES";
-    reconocimiento.current.continuous = false;
-    reconocimiento.current.interimResults = false;
-    reconocimiento.current.maxAlternatives = 1;
+  reconocimiento.current = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  reconocimiento.current.lang = "es-ES";
+  reconocimiento.current.continuous = false;
+  reconocimiento.current.interimResults = false;
+  reconocimiento.current.maxAlternatives = 1;
 
-    reconocimiento.current.onresult = async (event) => {
-      const texto = event.results[0][0].transcript.toLowerCase();
-      setUsuario(texto);
-      await procesarTexto(texto);
-    };
+  reconocimiento.current.onresult = async (event) => {
+    const texto = event.results[0][0].transcript.toLowerCase();
+    setUsuario(texto);
+    await procesarTexto(texto);
+  };
 
-    reconocimiento.current.onend = () => {
-      setEscuchando(false);
-      escuchandoRef.current = false;
-      setTimeout(() => {
-        if (!escuchandoRef.current) {
-          reconocimiento.current.start();
-          setEscuchando(true);
-          escuchandoRef.current = true;
-        }
-      }, 500);
-    };
-
-
-
-    const intervalo = setInterval(() => {
-    setHablando(window.speechSynthesis.speaking);
-  }, 100);
-  
-  
-  
-  // Activación automática si está listo
-  setTimeout(() => {
-    if (!escuchandoRef.current) {
+  // ✅ Control central del reinicio
+  const reiniciarReconocimiento = () => {
+    if (!window.speechSynthesis.speaking && !escuchandoRef.current) {
       reconocimiento.current.start();
       setEscuchando(true);
       escuchandoRef.current = true;
     }
-  }, 1000);
-  
-  
-  
-  
+  };
+
+  reconocimiento.current.onend = () => {
+    setEscuchando(false);
+    escuchandoRef.current = false;
+    // No reiniciamos automáticamente si está hablando
+    setTimeout(reiniciarReconocimiento, 300);
+  };
+
+  // Intervalo para reiniciar si dejó de hablar
+  const intervalo = setInterval(() => {
+    setHablando(window.speechSynthesis.speaking);
+    if (!window.speechSynthesis.speaking) {
+      reiniciarReconocimiento();
+    }
+  }, 100);
+
+  // Activación inicial
+  setTimeout(reiniciarReconocimiento, 1000);
+
   return () => clearInterval(intervalo);
-  }, [vozLista]);
+}, [vozLista]);
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 const enviarOrden = () => {
   if (ordenesRef.current.length === 0) {
