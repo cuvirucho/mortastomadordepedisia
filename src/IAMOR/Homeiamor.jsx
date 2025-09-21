@@ -43,12 +43,59 @@ const [platosComplejos, setPlatosComplejos] = useState({})
 
 
 
+
+const hablarSeguro = (mensaje) => {
+  // 1️⃣ Detener el reconocimiento si está activo
+  if (reconocimiento.current && escuchandoRef.current) {
+    reconocimiento.current.stop(); // Pausamos el micrófono
+    setEscuchando(false);
+    escuchandoRef.current = false;
+  }
+
+  // 2️⃣ Llamamos a la función original de hablar
+  hablar(mensaje, vozSeleccionadaRef.current);
+
+  // 3️⃣ Esperamos a que termine de hablar para reiniciar reconocimiento
+  const checkHablando = setInterval(() => {
+    if (!window.speechSynthesis.speaking) {
+      clearInterval(checkHablando); // Terminamos el intervalo
+      // 4️⃣ Reiniciamos el micrófono
+      reconocimiento.current.start();
+      setEscuchando(true);
+      escuchandoRef.current = true;
+    }
+  }, 100); // revisamos cada 100ms si terminó de hablar
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Este saluda una sola vez cuando la voz ya esté lista
 useEffect(() => {
   if (!vozLista || iniciado) return;
 
   const mensaje = "¡Hola! Bienvenida a moritas  Soy tu mesera morita . Puedes pedirme lo que quiras o preguntarme por el menú. Estoy para servirte.";
-  hablar(mensaje, vozSeleccionadaRef.current);
+  hablarSeguro(mensaje);
   setIniciado(true);
 }, [vozLista, iniciado]);
 
@@ -166,7 +213,7 @@ const enviarOrden = () => {
   console.log(pedidosCombinados);
 
   const mensaje = `Tu pedido ha sido enviado: ${resumen}. ¡Gracias!`;
-  hablar(mensaje, vozSeleccionadaRef.current);
+  hablarSeguro(mensaje);
   alert("✅ " + mensaje);
 
   // Guardar la combinación en localStorage
@@ -194,7 +241,7 @@ const eliminarOrden = (index) => {
 
   // 🗣️ Mensaje hablado al eliminar
   const mensaje = `La orden ${ordenEliminada.nombre} ha sido eliminada.`;
-  hablar(mensaje, vozSeleccionadaRef.current);
+  hablarSeguro(mensaje);
 };
 
 

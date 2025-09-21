@@ -275,22 +275,87 @@ export const useProcesadorTexto = ({ vozCargada, platosComplejos2 }) => {
     return false;
   };
 
+
+
+
+
+
+/*nuev*/
+
+// Función para sugerir platos por tipo
+const sugerirPorTipoDePlato = (tipo) => {
+  const sugerencias = Object.entries(platosRef.current)
+    .filter(([_, detalles]) => detalles.tipo?.toLowerCase() === tipo.toLowerCase())
+    .map(([nombre]) => nombre);
+
+  if (sugerencias.length === 0) {
+    const res = `Lo siento, no tengo platos del tipo "${tipo}".`;
+    setRespuesta(res);
+    hablarSiHayVoz(res);
+    return false;
+  }
+
+  const lista = sugerencias.join(", ");
+  const res = `Estos son los platos de tipo "${tipo}": ${lista}. ¿Cuál te gustaría pedir?`;
+  setRespuesta(res);
+  hablarSiHayVoz(res);
+  ultimasSugerenciasRef.current = sugerencias.map(s => s.toLowerCase());
+  return true;
+};
+
+
+
+
+
+
+// Detectar tipo de plato en el texto
+const detectarTipoPlato = (texto) => {
+  const tipos = ["desayuno", "pancakes", "tigrillo"]; // puedes agregar más tipos
+  const tipoMencionado = tipos.find(t => texto.toLowerCase().includes(t));
+    const noEsOrden = !contieneFrase(frasesOrden, texto);
+    const sinPlatosActivos = !platosPendientesRef.current[0] && !subitemActualRef.current;
+
+ 
+ 
+ 
+  if (tipoMencionado && noEsOrden && sinPlatosActivos) {
+     sugerirPorTipoDePlato(tipoMencionado);
+      return true;
+  }
+  return false;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   // Función principal
   const procesarTexto = async (texto) => {
     ultimoMensajeTimestampRef.current = Date.now();
     abaldoRef.current = true;
-console.log("procesando texto:", texto);
 
     let sugerido = platoSugeridoRef.current;
 
+    if (await ordendircta(texto)) return;
     if (await manejarContenidoPlato(texto)) return;
     if (await manejarConsultaMenu(texto)) return;
     if (await hayPedidoEnProceso(texto)) return;
     if (await procesarSugerenciaActiva(sugerido, texto)) return;
     if (await manejarListaDeSugerencias(texto)) return;
-    if (await ordendircta(texto)) return;
     if (await manejarSugerencia(texto)) return;
     if (await dijounproc(texto)) return;
+    if (await detectarTipoPlato(texto)) return;
     if (await manejarConversacionLibre(texto)) return;
   };
 
