@@ -6,7 +6,7 @@ import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { storage } from '../Firebase/Firebase';
 import autoTable from 'jspdf-autotable';
 
-const Facturahome = () => {
+const Homefactura = () => {
   const { numero } = useParams();
 
   // ----------------- Hooks -----------------
@@ -429,4 +429,4 @@ return (
   );
 };
 
-export default Facturahome;
+export default Homefactura;

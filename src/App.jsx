@@ -7,7 +7,8 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Pedidoshome from './pedidos/Pedidoshome'
 import Comprashome from './Compras/Comprashome'
 import Cajahome from './Caja/Cajahome'
-import Facturahome from './Facturas/facturahome'
+import Homefactura from './Facturas/Homefactura'
+
 
 function App() {
 
@@ -18,7 +19,7 @@ function App() {
         <Route path="/" element={<Home />} />      
         <Route path="/ia/:numero" element={<Homeiamor />} />        
        <Route path="/mesa/:numero" element={ <Mesashome/> } />
-       <Route path="/factura/:numero" element={ <Facturahome/> } />
+       <Route path="/factura/:numero" element={ <Homefactura/> } />
      
      
      <Route path="/ordentradi/:numero" element={ <Pedidoshome/> } />
