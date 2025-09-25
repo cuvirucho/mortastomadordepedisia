@@ -220,7 +220,18 @@ setcargaDOFIN(true)
 
 
 
+const irafactura = () => {
 
+ localStorage.setItem("facturaActual", JSON.stringify({
+      pedido,
+      total: totalPedido,
+      mesa: numero,
+      pagados,
+      restante
+    }));
+    navigate(`/factura/${numero}`);
+  
+}
 
 
   return (
@@ -247,7 +258,7 @@ setcargaDOFIN(true)
                   onClick={() => toggleSeleccion(p.id)}
                 >
                   <div className='cotefnoypreci'>
-                    <p>{p.nombre}</p>
+                    <p className='nobrepaltop'   >{p.nombre}</p>
                     <p>${p.precioVenta}</p>
                   </div>
 
@@ -286,10 +297,27 @@ setcargaDOFIN(true)
    
    
    <div>
-{cargaDOFIN ? (<p className='tilomes'    >Procesando...</p>) : (
-   <button  onClick={finalizarPedido}      className='btnfindpi'   >
+{cargaDOFIN ?
+ 
+ (<p className='tilomes'    >Procesando...</p>) 
+ 
+ : (
+
+<section  className='contvtn'  >
+
+
+<button  onClick={finalizarPedido}      className='btnfindpi'   >
       Finalizar pedido
     </button>
+
+
+<button onClick={irafactura}      className='btnfindpi'     >
+Crear factura
+
+</button>
+
+</section>
+
   )}
 
 </div>
