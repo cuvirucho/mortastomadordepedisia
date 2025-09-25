@@ -161,7 +161,7 @@ const [cargaDOFIN, setcargaDOFIN] = useState(false)
         <ul className="cajahome-pedidos">
           {pedidosRealizados.map((pedido, index) => (
             <li key={index} className="cajahome-pedido-item">
-              <strong>{pedido.nombre}</strong> - ${pedido.precioVenta} ({pedido.tipo})
+              <strong>{pedido.nombre}</strong> - ${pedido.precioVenta} 
             </li>
           ))}
         </ul>

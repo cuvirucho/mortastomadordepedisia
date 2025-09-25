@@ -11,6 +11,7 @@ const Homefactura = () => {
 
   // ----------------- Hooks -----------------
   const [factura, setFactura] = useState(null);
+ const [loading, setLoading] = useState(false); // 👈 estado de carga
 
   const [pdfUrl, setPdfUrl] = useState("");
 
@@ -61,6 +62,8 @@ const generarPDF = async () => {
     alert("Completa todos los campos antes de generar la factura");
     return;
   }
+
+setLoading(true);
 
   const doc = new jsPDF({ unit: "px", format: "a4" });
 
@@ -149,6 +152,8 @@ const generarPDF = async () => {
       } catch (error) {
         console.error("Error subiendo PDF:", error);
         alert("Ocurrió un error al subir la factura");
+      } finally{
+        setLoading(false)
       }
     };
   };
@@ -164,7 +169,7 @@ const generarPDF = async () => {
 
 
 
- const enviarWhatsApp = () => {
+const enviarWhatsApp = () => {
   if (!pdfUrl) {
     alert("Primero genera la factura antes de enviar por WhatsApp");
     return;
@@ -175,8 +180,13 @@ const generarPDF = async () => {
     return;
   }
 
-  // Limpiamos el número para que WhatsApp lo acepte
-  const numeroLimpio = form.numero.replace(/\D/g, ""); // quita todo lo que no sea dígito
+  // Limpiamos el número
+  let numeroLimpio = form.numero.replace(/\D/g, ""); // solo dígitos
+
+  // 👇 Si empieza con 0 (ej: 0963200325), lo convertimos al formato internacional
+  if (numeroLimpio.startsWith("0")) {
+    numeroLimpio = "593" + numeroLimpio.substring(1);
+  }
 
   const mensaje = `Hola ${form.nombre}, aquí tienes tu factura: ${pdfUrl}`;
   const whatsappURL = `https://wa.me/${numeroLimpio}?text=${encodeURIComponent(mensaje)}`;
@@ -213,6 +223,18 @@ return (
   
   
   
+
+ {/* 👇 Pantalla de carga */}
+      {loading && (
+        <div className="overlay-loading">
+          <div className="spinner"></div>
+          <p>Generando factura, por favor espera...</p>
+        </div>
+      )}
+
+
+
+
         <article className="HEDER">
           <img
             className="LOGOIMG"
@@ -420,8 +442,17 @@ return (
 
 
 <button  onClick={canselR}         className='btnfindpi'   >
-  Cancelar
+  {
+    pdfUrl?
+    
+    "Cerrar"
+    :
+    "Canselar"
+  }
 </button>
+
+
+
 
 
 </div>
