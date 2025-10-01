@@ -42,6 +42,12 @@ const Pedidoshome = () => {
   const desayunos = platosFiltrados.filter(plato => plato.tipo === "desayuno");
   const desatigrillos = platosFiltrados.filter(plato => plato.tipo === "tigrillo");
   const pancakes = platosFiltrados.filter(plato => plato.tipo === "pancakes");
+  const conbos = platosFiltrados.filter(plato => plato.tipo === "combos");
+  const bolones = platosFiltrados.filter(plato => plato.tipo === "bolones");
+  const bebidas = platosFiltrados.filter(plato => plato.tipo === "bebidas");
+
+
+
 
   const handleExtraChange = (key, value) => {
     setExtras(prev => ({ ...prev, [key]: value }));
@@ -239,6 +245,16 @@ null
           })}
         </ul>
 
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
         {desatigrillos.length > 0 && <p className='tiotigrillo'>Tigrillos</p>}
         <ul className="lista-desayunos">
           {desatigrillos.map(plato => {
@@ -271,7 +287,51 @@ null
             );
           })}
         </ul>
+        
+        
+        
+        
+        
+        {bolones.length > 0 && <p className='tiotigrillo'>Bolones</p>}
+        <ul className="lista-desayunos">
+          {bolones.map(plato => {
+            const key = `tigrillo-${plato.alias[0]}`;
+            return (
+              <li className='plato-item' key={key}>
+                <p><strong>{plato.alias[0]}</strong></p>
 
+                <div className="cantidad-container">
+                  <button onClick={() => handleCantidadChange(key, -1)}>-</button>
+                  <span className='cari'>{cantidades[key] || 1}</span>
+                  <button onClick={() => handleCantidadChange(key, 1)}>+</button>
+                </div>
+
+                <input
+                  type="text"
+                  className="nota-input"
+                  placeholder="Detalles"
+                  value={extras[key] || ""}
+                  onChange={(e) => handleExtraChange(key, e.target.value)}
+                />
+
+                <button
+                  className='btnagrag'
+                  onClick={() => handleAgregarPedido(key, plato)}
+                >
+                  Agregar el pedido
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+
+       
+       
+       
+       
+       
+       
+       
         {pancakes.length > 0 && <p className='tiosdesyunos'>Pancakes</p>}
         <ul className="lista-desayunos">
           {pancakes.map(plato => {
@@ -304,6 +364,87 @@ null
             );
           })}
         </ul>
+     
+     
+     
+     
+        {conbos.length > 0 && <p className='tiosdesyunos'>Combos</p>}
+        <ul className="lista-desayunos">
+          {conbos.map(plato => {
+            const key = `pancakes-${plato.alias[0]}`;
+            return (
+              <li className='plato-item' key={key}>
+                <p><strong>{plato.alias[0]}</strong></p>
+
+                <div className="cantidad-container">
+                  <button onClick={() => handleCantidadChange(key, -1)}>-</button>
+                  <span className='cari'>{cantidades[key] || 1}</span>
+                  <button onClick={() => handleCantidadChange(key, 1)}>+</button>
+                </div>
+
+                <input
+                  type="text"
+                  className="nota-input"
+                  placeholder="Detalles"
+                  value={extras[key] || ""}
+                  onChange={(e) => handleExtraChange(key, e.target.value)}
+                />
+
+                <button
+                  className='btnagrag'
+                  onClick={() => handleAgregarPedido(key, plato)}
+                >
+                  Agregar el pedido
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+   
+   
+   
+   
+   
+   
+   
+        {bebidas.length > 0 && <p className='tiosdesyunos'>Bebidas</p>}
+        <ul className="lista-desayunos">
+          {bebidas.map(plato => {
+            const key = `pancakes-${plato.alias[0]}`;
+            return (
+              <li className='plato-item' key={key}>
+                <p><strong>{plato.alias[0]}</strong></p>
+
+                <div className="cantidad-container">
+                  <button onClick={() => handleCantidadChange(key, -1)}>-</button>
+                  <span className='cari'>{cantidades[key] || 1}</span>
+                  <button onClick={() => handleCantidadChange(key, 1)}>+</button>
+                </div>
+
+                <input
+                  type="text"
+                  className="nota-input"
+                  placeholder="Detalles"
+                  value={extras[key] || ""}
+                  onChange={(e) => handleExtraChange(key, e.target.value)}
+                />
+
+                <button
+                  className='btnagrag'
+                  onClick={() => handleAgregarPedido(key, plato)}
+                >
+                  Agregar el pedido
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+
+
+
+
+
+
 
       </section>
 
