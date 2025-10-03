@@ -134,6 +134,48 @@ ira(); // Redirigir a la mesa actual
 
 /*fin d eenviar oden */
 
+/*pedido extraoduinario*/
+const [pedidoextaroer, setpedidoextaroer] = useState(false)
+
+const pediextaror = () => {
+setpedidoextaroer(!pedidoextaroer)
+}
+
+
+
+// ... dentro de tu componente Pedidoshome
+
+// Estado del formulario extraordinario
+const [pedidoExtra, setPedidoExtra] = useState({ nombre: "", costo: "", detalle: "" });
+
+const handleChangeExtra = (e) => {
+  const { name, value } = e.target;
+  setPedidoExtra(prev => ({ ...prev, [name]: value }));
+};
+
+const handleGuardarExtra = () => {
+  if (!pedidoExtra.nombre || !pedidoExtra.costo) {
+    alert("⚠️ Debes ingresar nombre y costo");
+    return;
+  }
+
+  const nuevoPedido = {
+    id: Math.random().toString(36).substr(2, 9),
+    nombre: pedidoExtra.nombre,
+    detalle: pedidoExtra.detalle,
+    tipo: "extraordinario",
+    precioVenta: parseFloat(pedidoExtra.costo),
+    ingredientes: [],
+  };
+
+  setOrdenes(prev => [...prev, nuevoPedido]);
+  alert("✅ Pedido extraordinario agregado");
+
+  // Resetear formulario
+  setPedidoExtra({ nombre: "", costo: "", detalle: "" });
+  setpedidoextaroer(false); // cerrar formulario
+};
+
 
 
   return (
@@ -190,7 +232,66 @@ ira(); // Redirigir a la mesa actual
 
 
 
-      <section className='contepatps'>
+
+
+
+
+
+{
+  pedidoextaroer?
+  
+  
+  <>
+{
+  pedidoextaroer && (
+    <div className="form-extra">
+      <h3>Pedido Extraordinario</h3>
+      <input
+        type="text"
+        name="nombre"
+        placeholder="Nombre del pedido"
+        value={pedidoExtra.nombre}
+        onChange={handleChangeExtra}
+      />
+      <input
+        type="number"
+        name="costo"
+        placeholder="Costo"
+        value={pedidoExtra.costo}
+        onChange={handleChangeExtra}
+      />
+      <textarea
+        name="detalle"
+        placeholder="Detalles adicionales"
+        value={pedidoExtra.detalle}
+        onChange={handleChangeExtra}
+      />
+      <button onClick={handleGuardarExtra}>
+        Guardar pedido extraordinario
+      </button>
+      <button
+        onClick={() => setpedidoextaroer(false)}
+        className="btn-cancelar"
+      >
+        Cancelar
+      </button>
+    </div>
+  )
+}
+
+
+  
+  </>
+  
+  :
+     
+   <>
+   
+   <button className='bntector'    onClick={pediextaror}   >
+  Pedido extraordinario
+</button>
+   
+     <section className='contepatps'>
       
  
 
@@ -448,6 +549,13 @@ null
 
       </section>
 
+   </>  
+     
+   
+}
+
+
+   
     
 
       {/* Modal carrito */}
@@ -541,6 +649,9 @@ null
       )}
 
       <Navar />
+
+
+
     </article>
   );
 };

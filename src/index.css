@@ -599,12 +599,13 @@ height: 100vh;
 .contepatps{
   background-color: rgba(102, 204, 0, 0);
   width: 100%;
-  max-height: 90vh;
+  max-height: 100vh;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
+  gap: 10px;
 }
 
 
@@ -1749,4 +1750,88 @@ background-color: #007bff00;
 
 @keyframes spin {
   100% { transform: rotate(360deg); }
+}
+/*PEDIOECTRODINARIO*/
+
+/* Contenedor del formulario */
+.form-extra {
+  background: #ffffff;
+  border-radius: 15px;
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 400px;
+  box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.form-extra h3 {
+  text-align: center;
+  color: #6f00ff;
+  margin-bottom: 15px;
+}
+
+/* Inputs */
+.form-extra input,
+.form-extra textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease-in-out;
+}
+
+.form-extra input:focus,
+.form-extra textarea:focus {
+  border-color: #6f00ff;
+  outline: none;
+  box-shadow: 0 0 4px rgba(111, 0, 255, 0.3);
+}
+
+/* Botones */
+.form-extra button {
+  background: #6f00ff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.form-extra button:hover {
+  background: #5200c9;
+}
+
+.form-extra .btn-cancelar {
+  background: #ccc;
+  color: #333;
+  margin-left: 10px;
+}
+
+.form-extra .btn-cancelar:hover {
+  background: #999;
+}
+
+/* Animación de entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.bntector{
+  background-color: blueviolet;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  border: none;
+  color: floralwhite;
+font-size: clamp(1rem,1rem,2vh);
 }
