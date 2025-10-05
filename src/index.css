@@ -615,7 +615,7 @@ background-color: #3694ff00;
 width: 100%;
 display: flex;
 padding: 10px;
-min-height: 13rem;
+min-height: 15rem;
 gap: 15px;
 overflow-x: auto;
 }
@@ -627,11 +627,11 @@ overflow-x: auto;
   align-items: center;
   border-radius: 10px;
   padding: 15px;  
-  height: 100%;
+  height: auto;
   background-color: #9e070700;
   color: #6f00ff;
   box-shadow: 0px 2px 5px rgba(179, 12, 245, 0.521);
-  min-width: 270px;
+  min-width: 280px;
   border: 3px solid   #a06ae6;
 }
 
@@ -679,6 +679,8 @@ text-align: center;
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-top: 15px;
+  margin-bottom: 15px;
   background-color: rgba(12, 209, 209, 0);
 }
 .cari{
@@ -691,7 +693,7 @@ text-align: center;
   background-color: #ff990000;
   color: #a06ae6;
   border: none;
-  padding: 6px 12px;
+  padding: 3px 12px;
   border-radius: 6px;
   font-size: 1.5rem;
   cursor: pointer;
@@ -840,19 +842,42 @@ background-color: #6f00ff;
 
 
 .conteordene {
-  margin-top: 20px;
+  margin-top: 10px;
   padding: 10px;
   display: flex;
   flex-direction: column;
   border: 1px solid #6f00ff;
   border-radius: 10px;
-  background-color: rgba(111, 0, 255, 0.1);
+  background-color: rgba(166, 255, 0, 0);
 }
 .mesascontainerpadre {
   display: flex;
   flex-direction: column;
   align-items: center;
 
+}
+
+.rmunpedi{
+  background-color: #007bff00;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: column;
+position: relative;
+padding:10px;
+padding-top: 0;
+border-bottom: solid 1px blueviolet;
+}
+
+.btnelimi{
+ background-color: blueviolet;
+ color: floralwhite;
+ padding: 2.5px 10px;
+ border-radius: 100rem;
+border: none;
+position: absolute;
+margin-left: 85%;
+top: 0;
 }
 
 /*fin de tomdorde pedios*/

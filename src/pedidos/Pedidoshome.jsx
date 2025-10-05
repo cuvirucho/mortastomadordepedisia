@@ -178,6 +178,19 @@ const handleGuardarExtra = () => {
 
 
 
+
+/*borarar item en el carrito */
+
+
+// Función para eliminar un pedido del carrito
+const eliminarPedido = (id) => {
+  setOrdenes(prev => prev.filter(item => item.id !== id));
+};
+
+
+
+
+
   return (
     <article className='contefull'>
      
@@ -473,6 +486,16 @@ null
         <ul className="lista-desayunos">
           {conbos.map(plato => {
             const key = `pancakes-${plato.alias[0]}`;
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
             return (
               <li className='plato-item' key={key}>
                 <p><strong>{plato.alias[0]}</strong></p>
@@ -614,12 +637,19 @@ null
                <div  className='conteordene'  >
            
            
-             <ul style={{ listStyle: 'none', padding: 0 }}>
+             <ul     style={{ listStyle: 'none', padding: 0 }}>
                 {ordenes.map(item => (
-                  <li key={item.id} style={{ marginBottom: 10, borderBottom: '1px solid #ccc', paddingBottom: 10 }}>
+                  <li key={item.id} className='rmunpedi'    >
                     <strong  className='brdpltyo'  >{item.nombre}</strong>
                     {item.detalle && <p style={{ margin: '4px 0' }}>Detalle: {item.detalle}</p>}
                     <small style={{ color: '#555' }}>Tipo: {item.tipo}</small>
+                 <button
+  onClick={() => eliminarPedido(item.id)}
+ className='btnelimi'
+>
+  x
+</button>
+
                   </li>
                 ))}
             
