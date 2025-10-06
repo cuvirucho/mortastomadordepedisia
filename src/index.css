@@ -597,25 +597,42 @@ height: 100vh;
 
 
 .contepatps{
-  background-color: rgba(102, 204, 0, 0);
+  background-color: rgba(65, 226, 20, 0);
   width: 100%;
-  max-height: 100vh;
+  min-height: 50vh;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
   gap: 10px;
+ 
 }
 
 
 /* Lista de desayunos */
+
+
+
+
+
+.contedesaynos{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+background-color: rgba(255, 192, 203, 0);
+width: 100%;
+}
+
+
+
 .lista-desayunos{
-background-color: #3694ff00;
+background-color: #09a6d600;
 width: 100%;
 display: flex;
 padding: 10px;
-min-height: 15rem;
+height: auto;
 gap: 15px;
 overflow-x: auto;
 }
@@ -631,7 +648,7 @@ overflow-x: auto;
   background-color: #9e070700;
   color: #6f00ff;
   box-shadow: 0px 2px 5px rgba(179, 12, 245, 0.521);
-  min-width: 280px;
+  min-width:  18rem;
   border: 3px solid   #a06ae6;
 }
 

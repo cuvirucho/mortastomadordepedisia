@@ -326,7 +326,12 @@ null
 
         
 
-        {desayunos.length > 0 && <p className='tiosdesyunos'>Desayunos</p>}
+        {desayunos.length > 0 ?
+        < div className='contedesaynos' >
+        
+        <p className='tiosdesyunos'>Desayunos</p>
+       
+       
         <ul className="lista-desayunos">
           {desayunos.map(plato => {
             const key = `desayuno-${plato.alias[0]}`;
@@ -358,6 +363,12 @@ null
             );
           })}
         </ul>
+        
+        </div>
+        :
+        null
+         }
+    
 
       
       
@@ -369,7 +380,10 @@ null
       
       
       
-        {desatigrillos.length > 0 && <p className='tiotigrillo'>Tigrillos</p>}
+        {desatigrillos.length > 0 ?
+        <div className='contedesaynos'>
+        <p className='tiotigrillo'>Tigrillos</p>
+
         <ul className="lista-desayunos">
           {desatigrillos.map(plato => {
             const key = `tigrillo-${plato.alias[0]}`;
@@ -402,11 +416,18 @@ null
           })}
         </ul>
         
+        </div>
+        :
+        null
+        }
+
         
         
         
         
-        {bolones.length > 0 && <p className='tiotigrillo'>Bolones</p>}
+        {bolones.length > 0 ?
+      <div className='contedesaynos'>
+       <p className='tiotigrillo'>Bolones</p>
         <ul className="lista-desayunos">
           {bolones.map(plato => {
             const key = `tigrillo-${plato.alias[0]}`;
@@ -439,6 +460,11 @@ null
           })}
         </ul>
 
+      </div>
+        :
+        null
+        }
+      
        
        
        
@@ -446,8 +472,10 @@ null
        
        
        
-        {pancakes.length > 0 && <p className='tiosdesyunos'>Pancakes</p>}
-        <ul className="lista-desayunos">
+        {pancakes.length > 0 ?
+        <div className='contedesaynos'>
+           <p className='tiosdesyunos'>Pancakes</p>
+       <ul className="lista-desayunos">
           {pancakes.map(plato => {
             const key = `pancakes-${plato.alias[0]}`;
             return (
@@ -478,12 +506,19 @@ null
             );
           })}
         </ul>
+        </div>
+        :
+        null
+        }
+      
      
      
      
      
-        {conbos.length > 0 && <p className='tiosdesyunos'>Combos</p>}
-        <ul className="lista-desayunos">
+        {conbos.length > 0 ?
+        <div className='contedesaynos'>
+          <p className='tiosdesyunos'>Combos</p>
+           <ul className="lista-desayunos">
           {conbos.map(plato => {
             const key = `pancakes-${plato.alias[0]}`;
           
@@ -525,14 +560,22 @@ null
           })}
         </ul>
    
+        
+        </div>
+        :
+        null
+        }
+     
    
    
    
    
    
    
-        {bebidas.length > 0 && <p className='tiosdesyunos'>Bebidas</p>}
-        <ul className="lista-desayunos">
+        {bebidas.length > 0 ?
+        <div className='contedesaynos'>
+<p className='tiosdesyunos'>Bebidas</p>
+      <ul className="lista-desayunos">
           {bebidas.map(plato => {
             const key = `pancakes-${plato.alias[0]}`;
             return (
@@ -564,6 +607,14 @@ null
           })}
         </ul>
 
+        </div>
+        :
+        null 
+        
+        }
+        
+        
+  
 
 
 
