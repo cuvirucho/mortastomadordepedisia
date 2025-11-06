@@ -1,138 +1,128 @@
 import React, { useState } from "react";
 import Navar from "../utilidales/Navar";
-import { addDoc, collection, doc, Timestamp, updateDoc, getDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  Timestamp,
+  updateDoc,
+  getDoc,
+} from "firebase/firestore";
 import { db } from "../Firebase/Firebase";
 import { useNavigate } from "react-router-dom";
 
 const Cajahome = () => {
   const pedidosListos = JSON.parse(localStorage.getItem("pedidosListos")) || [];
   const paymentData = JSON.parse(localStorage.getItem("paymentData")) || {};
-  const pedidosRealizados = JSON.parse(localStorage.getItem("pedidosRealizados")) || [];
-  const ingredientesAcumulados = JSON.parse(localStorage.getItem("ingredientesAcumulados")) || [];
+  const pedidosRealizados =
+    JSON.parse(localStorage.getItem("pedidosRealizados")) || [];
+  const ingredientesAcumulados =
+    JSON.parse(localStorage.getItem("ingredientesAcumulados")) || [];
   const [compras, setCompras] = useState(() => {
     const comprasGuardadas = localStorage.getItem("compras");
     return comprasGuardadas ? JSON.parse(comprasGuardadas) : [];
   });
   const navigate = useNavigate();
 
-  // ✅ Calcular totales
+  // ✅ Calcular totales generales
   const totalCompras = compras.reduce((acc, compra) => acc + compra.valor, 0);
   const totalVentas = pedidosRealizados.reduce((acc, pedido) => {
     const precio = parseFloat(pedido.precioVenta) || 0;
     return acc + precio;
   }, 0);
-  const totalCaja = totalVentas - totalCompras;
+
+  // ✅ Totales separados por tipo de pago
+  const totalTransferencias = pedidosRealizados
+    .filter((p) => p.tipoPago === "transferencia")
+    .reduce((acc, p) => acc + (parseFloat(p.precioVenta) || 0), 0);
+
+  const totalEfectivo = pedidosRealizados
+    .filter((p) => p.tipoPago === "efectivo")
+    .reduce((acc, p) => acc + (parseFloat(p.precioVenta) || 0), 0);
+
+  const totalCaja = totalVentas - totalCompras - totalTransferencias;
 
   // ✅ Restar ingredientes usados de la bodega
-const actualizarBodega = async () => {
-  try {
-    const ref = doc(
-      db,
-      "usuarios",
-      "principamorasadmi@moritas.com",
-      "Bodega",
-      "ProductosDeComida"
-    );
+  const actualizarBodega = async () => {
+    try {
+      const ref = doc(
+        db,
+        "usuarios",
+        "principamorasadmi@moritas.com",
+        "Bodega",
+        "ProductosDeComida"
+      );
 
-    // 1. Leer la bodega actual
-    const snapshot = await getDoc(ref);
-    if (!snapshot.exists()) {
-      console.error("❌ No existe la bodega en Firebase");
-      return;
-    }
-
-    let productos = snapshot.data();
-
-    // 2. Construir objeto con updates
-    const updates = {};
-
-    ingredientesAcumulados.forEach((ing) => {
-      if (productos[ing.nombre]) {
-        let nuevaCantidad =
-          (productos[ing.nombre].cantidadExistente || 0) - (ing.cantidad || 0);
-
-        if (nuevaCantidad < 0) nuevaCantidad = 0;
-
-        // ✅ Usamos corchetes para soportar espacios en el nombre
-        updates[`${ing.nombre}.cantidadExistente`] = nuevaCantidad;
-      } else {
-        console.warn(`⚠️ El producto ${ing.nombre} no existe en la bodega`);
+      const snapshot = await getDoc(ref);
+      if (!snapshot.exists()) {
+        console.error("❌ No existe la bodega en Firebase");
+        return;
       }
-    });
 
-    // 3. Guardar en Firestore
-    if (Object.keys(updates).length > 0) {
-      await updateDoc(ref, updates);
-      console.log("✅ Bodega actualizada:", updates);
-    } else {
-      console.log("⚠️ No hubo productos para actualizar");
+      let productos = snapshot.data();
+      const updates = {};
+
+      ingredientesAcumulados.forEach((ing) => {
+        if (productos[ing.nombre]) {
+          let nuevaCantidad =
+            (productos[ing.nombre].cantidadExistente || 0) -
+            (ing.cantidad || 0);
+
+          if (nuevaCantidad < 0) nuevaCantidad = 0;
+          updates[`${ing.nombre}.cantidadExistente`] = nuevaCantidad;
+        }
+      });
+
+      if (Object.keys(updates).length > 0) {
+        await updateDoc(ref, updates);
+        console.log("✅ Bodega actualizada:", updates);
+      }
+    } catch (error) {
+      console.error("❌ Error actualizando bodega:", error);
     }
-  } catch (error) {
-    console.error("❌ Error actualizando bodega:", error);
-  }
-};
-
-
-
+  };
 
   // ✅ Guardar en Firebase y borrar localStorage
-const finalizarDia = async () => {
- 
- setcargaDOFIN(true)
- 
-  try {
-    const userDocRef = doc(db, "usuarios", "principamorasadmi@moritas.com");
-    const ordersRef = collection(userDocRef, "fndia");
+  const [cargaDOFIN, setcargaDOFIN] = useState(false);
 
-    const resumen = {
-      fecha: new Date().toLocaleDateString("es-EC"),
-      timestamp: Timestamp.now(),
-      totalVentas,
-      totalCompras,
-      totalCaja,
-      listadecomparas: compras,
-      ingredientesusados: ingredientesAcumulados,
-      pedidoslocal: pedidosRealizados,
-    };
+  const finalizarDia = async () => {
+    setcargaDOFIN(true);
 
-    // 1. Guardar resumen del día
-    await addDoc(ordersRef, resumen);
+    try {
+      const userDocRef = doc(db, "usuarios", "principamorasadmi@moritas.com");
+      const ordersRef = collection(userDocRef, "fndia");
 
-    // 2. Restar ingredientes de la bodega
-    await actualizarBodega();
+      const resumen = {
+        fecha: new Date().toLocaleDateString("es-EC"),
+        timestamp: Timestamp.now(),
+        totalVentas,
+        totalCompras,
+        totalCaja,
+        totalTransferencias,
+        totalEfectivo,
+        listadecomparas: compras,
+        ingredientesusados: ingredientesAcumulados,
+        pedidoslocal: pedidosRealizados,
+      };
 
-    // 3. Limpiar localStorage
-    localStorage.removeItem("pedidosListos");
-    localStorage.removeItem("paymentData");
-    localStorage.removeItem("compras");
-    localStorage.removeItem("pedidosRealizados");
-    localStorage.removeItem("ingredientesAcumulados");
+      await addDoc(ordersRef, resumen);
+      await actualizarBodega();
 
-    alert("✅ Día finalizado, bodega actualizada y guardado en Firebase 🚀");
+      localStorage.removeItem("pedidosListos");
+      localStorage.removeItem("paymentData");
+      localStorage.removeItem("compras");
+      localStorage.removeItem("pedidosRealizados");
+      localStorage.removeItem("ingredientesAcumulados");
 
-  } catch (error) {
-    console.error("❌ Error guardando en Firebase:", error);
-    alert("Hubo un error al guardar el resumen en Firebase.");
-  }finally {
-    setcargaDOFIN(false)
- navigate(`/`);
-  }
-};
-
-
-console.log(ingredientesAcumulados);
-
-
-
-
-/*cagadofin*/
-const [cargaDOFIN, setcargaDOFIN] = useState(false)
-
-
-
-
-
-
+      alert("✅ Día finalizado, bodega actualizada y guardado en Firebase 🚀");
+    } catch (error) {
+      console.error("❌ Error guardando en Firebase:", error);
+      alert("Hubo un error al guardar el resumen en Firebase.");
+    } finally {
+      setcargaDOFIN(false);
+      navigate(`/`);
+    }
+  };
 
   return (
     <section className="contfllhomecaja">
@@ -147,43 +137,51 @@ const [cargaDOFIN, setcargaDOFIN] = useState(false)
       <div className="contecajfu">
         <div className="contedatscajas">
           <h2 className="totlcaja">Caja</h2>
+
           <h3 className="cajahome-subtitle cajahome-total">
-            Total de Ventas: ${totalVentas.toFixed(2)}
+            💰 Total de Ventas: ${totalVentas.toFixed(2)}
           </h3>
+
+          <h4 className="cajahome-subtitle cajahome-total">
+            🔵 Total por Transferencias: ${totalTransferencias.toFixed(2)}
+          </h4>
+
+          <h4 className="cajahome-subtitle cajahome-total">
+            🟢 Total en Efectivo: ${totalEfectivo.toFixed(2)}
+          </h4>
+
           <h3 className="cajahome-subtitle cajahome-total compra">
-            Total de Compras: ${totalCompras.toFixed(2)}
+            🧾 Total de Compras: ${totalCompras.toFixed(2)}
           </h3>
+
           <h3 className="cajahome-subtitle cajahome-total caja">
-            Total de caja: ${totalCaja.toFixed(2)}
+            💼 Total en Caja: ${totalCaja.toFixed(2)}
           </h3>
         </div>
 
         <ul className="cajahome-pedidos">
           {pedidosRealizados.map((pedido, index) => (
             <li key={index} className="cajahome-pedido-item">
-              <strong>{pedido.nombre}</strong> - ${pedido.precioVenta} 
+              <strong>{pedido.nombre}</strong> - ${pedido.precioVenta}{" "}
+              <em>({pedido.tipoPago || "sin tipo"})</em>
             </li>
           ))}
         </ul>
 
-
-{pedidosRealizados.length === 0 && (
-  <p className="nopedidos">No hay pedidos realizados todavía.</p>
-)}
-
-
+        {pedidosRealizados.length === 0 && (
+          <p className="nopedidos">No hay pedidos realizados todavía.</p>
+        )}
       </div>
 
-      {/* Botón que guarda en Firebase, actualiza bodega y borra local */}
-      
-   <div>
-{cargaDOFIN ? (<p className='cajahomebutton'    >Procesando...</p>) : (
-   <button  onClick={finalizarDia}      className='cajahomebutton'   >
-      Finalizar dia
-    </button>
-  )}
-
-</div>
+      <div>
+        {cargaDOFIN ? (
+          <p className="cajahomebutton">Procesando...</p>
+        ) : (
+          <button onClick={finalizarDia} className="cajahomebutton">
+            Finalizar día
+          </button>
+        )}
+      </div>
 
       <Navar />
     </section>
