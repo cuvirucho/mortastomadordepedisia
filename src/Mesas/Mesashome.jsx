@@ -566,7 +566,7 @@ const Mesashome = () => {
               onChange={(e) => setMontoRecibido(e.target.value)}
               style={{
                 marginTop: "10px",
-                padding: "6px",
+
                 borderRadius: "1rem",
                 padding: "8px",
                 border: "none",
@@ -595,6 +595,8 @@ const Mesashome = () => {
           </div>
         </div>
       )}
+
+      <Navar />
     </div>
   );
 };
