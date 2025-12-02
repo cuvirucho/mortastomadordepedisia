@@ -40,7 +40,7 @@ const Cajahome = () => {
     .filter((p) => p.tipoPago === "efectivo")
     .reduce((acc, p) => acc + (parseFloat(p.precioVenta) || 0), 0);
 
-  const totalCaja = totalVentas - totalCompras - totalTransferencias;
+  const totalCaja = totalVentas - totalTransferencias;
 
   // ✅ Restar ingredientes usados de la bodega
   const actualizarBodega = async () => {
@@ -149,10 +149,6 @@ const Cajahome = () => {
           <h4 className="cajahome-subtitle cajahome-total">
             🟢 Total en Efectivo: ${totalEfectivo.toFixed(2)}
           </h4>
-
-          <h3 className="cajahome-subtitle cajahome-total compra">
-            🧾 Total de Compras: ${totalCompras.toFixed(2)}
-          </h3>
 
           <h3 className="cajahome-subtitle cajahome-total caja">
             💼 Total en Caja: ${totalCaja.toFixed(2)}
