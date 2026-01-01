@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { obtenerPlatosComplejos } from '../Firebase/PlatosComplejos';
-import Navar from '../utilidales/Navar';
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { obtenerPlatosComplejos } from "../Firebase/PlatosComplejos";
+import Navar from "../utilidales/Navar";
 
 const Pedidoshome = () => {
   const [menu, setMenu] = useState({});
@@ -11,10 +11,9 @@ const Pedidoshome = () => {
   const [cantidades, setCantidades] = useState({});
   const [search, setSearch] = useState("");
   const [ordenes, setOrdenes] = useState([]);
+  console.log(ordenes);
 
-
-
-    const ira = () => {
+  const ira = () => {
     navigation(`/mesa/${numero}`); // Ruta que definiste en App
   };
 
@@ -24,7 +23,9 @@ const Pedidoshome = () => {
   useEffect(() => {
     const cargarPlatos = async () => {
       try {
-        const data = await obtenerPlatosComplejos("principamorasadmi@moritas.com");
+        const data = await obtenerPlatosComplejos(
+          "principamorasadmi@moritas.com"
+        );
         setMenu(data || {});
       } catch (e) {
         console.error("Error cargando platos complejos:", e);
@@ -33,28 +34,29 @@ const Pedidoshome = () => {
     cargarPlatos();
   }, []);
 
-  const platosFiltrados = Object.values(menu).filter(plato =>
-    plato.alias.some(nombre =>
+  const platosFiltrados = Object.values(menu).filter((plato) =>
+    plato.alias.some((nombre) =>
       nombre.toLowerCase().includes(search.toLowerCase())
     )
   );
 
-  const desayunos = platosFiltrados.filter(plato => plato.tipo === "desayuno");
-  const desatigrillos = platosFiltrados.filter(plato => plato.tipo === "tigrillo");
-  const pancakes = platosFiltrados.filter(plato => plato.tipo === "pancakes");
-  const conbos = platosFiltrados.filter(plato => plato.tipo === "combos");
-  const bolones = platosFiltrados.filter(plato => plato.tipo === "bolones");
-  const bebidas = platosFiltrados.filter(plato => plato.tipo === "bebidas");
-
-
-
+  const desayunos = platosFiltrados.filter(
+    (plato) => plato.tipo === "desayuno"
+  );
+  const desatigrillos = platosFiltrados.filter(
+    (plato) => plato.tipo === "tigrillo"
+  );
+  const pancakes = platosFiltrados.filter((plato) => plato.tipo === "pancakes");
+  const conbos = platosFiltrados.filter((plato) => plato.tipo === "combos");
+  const bolones = platosFiltrados.filter((plato) => plato.tipo === "bolones");
+  const bebidas = platosFiltrados.filter((plato) => plato.tipo === "bebidas");
 
   const handleExtraChange = (key, value) => {
-    setExtras(prev => ({ ...prev, [key]: value }));
+    setExtras((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleCantidadChange = (key, delta) => {
-    setCantidades(prev => {
+    setCantidades((prev) => {
       const nuevaCantidad = Math.max(1, (prev[key] || 1) + delta);
       return { ...prev, [key]: nuevaCantidad };
     });
@@ -62,154 +64,190 @@ const Pedidoshome = () => {
 
   const handleAgregarPedido = (key, plato) => {
     const cantidad = cantidades[key] || 1;
-    const detalle = extras[key] || "";
 
-    const nuevosPedidos = Array(cantidad).fill().map(() => ({
-      id: Math.random().toString(36).substr(2, 9),
-      nombre: plato.alias[0],
-      detalle: detalle,
-      tipo: plato.tipo,
-      precioVenta: plato.precioVenta,
-      ingredientes: plato.ingredientes || [],
-    }));
+    // respuestas de selects
+    const respuestasSelect = selecciones[key] || {};
 
-    setOrdenes(prev => [...prev, ...nuevosPedidos]);
-    alert(`Pedido agregado`);
-    setExtras(prev => ({ ...prev, [key]: "" }));
-    setCantidades(prev => ({ ...prev, [key]: 1 }));
+    // texto libre
+    const detalleTexto = extras[key];
 
+    // 🔹 construir detalle final
+    let detalleFinal = {};
 
-  };
-
-
-
-
-
-
-
-
-
-
-
-/* enviar orden*/
-
-
-
-const enviarOrden = () => {
-  if (ordenes.length === 0) {
-    hablar("No hay nada en la orden.");
-    alert("⚠️ No hay nada en la orden.");
-    return;
-  }
-
-  // Leer lo que ya hay en localStorage
-  const pedidoExistenteJSON = localStorage.getItem(`mesa${numero}`);
-  let pedidoExistente = [];
-  if (pedidoExistenteJSON) {
-    try {
-      pedidoExistente = JSON.parse(pedidoExistenteJSON);
-      if (!Array.isArray(pedidoExistente)) pedidoExistente = [];
-    } catch {
-      pedidoExistente = [];
+    if (Object.keys(respuestasSelect).length > 0) {
+      detalleFinal = respuestasSelect;
     }
-  }
 
-  // Combinar pedidos anteriores con los nuevos
-  const pedidosCombinados = [...pedidoExistente, ...ordenes];
+    if (detalleTexto && detalleTexto.trim() !== "") {
+      detalleFinal = {
+        ...detalleFinal,
+        Detalle: detalleTexto,
+      };
+    }
 
-  const resumen = pedidosCombinados.map((o) => `${o.nombre}`).join(" | ");
+    const nuevosPedidos = Array(cantidad)
+      .fill()
+      .map(() => ({
+        id: Math.random().toString(36).substr(2, 9),
+        nombre: plato.alias[0],
+        detalle: Object.keys(detalleFinal).length > 0 ? detalleFinal : null,
+        tipo: plato.tipo,
+        precioVenta: plato.precioVenta,
+        ingredientes: plato.ingredientes || [],
+      }));
 
-  const mensaje = `Tu pedido ha sido enviado: ${resumen}. ¡Gracias!`;
-  alert("✅ " + mensaje);
+    setOrdenes((prev) => [...prev, ...nuevosPedidos]);
 
-  // Guardar la combinación en localStorage
-  localStorage.setItem(`mesa${numero}`, JSON.stringify(pedidosCombinados));
+    // limpiar estados
+    setSelecciones((prev) => {
+      const copia = { ...prev };
+      delete copia[key];
+      return copia;
+    });
 
-  setOrdenes([]);
-ira(); // Redirigir a la mesa actual
-};
+    setExtras((prev) => {
+      const copia = { ...prev };
+      delete copia[key];
+      return copia;
+    });
 
-
-
-
-/*fin d eenviar oden */
-
-/*pedido extraoduinario*/
-const [pedidoextaroer, setpedidoextaroer] = useState(false)
-
-const pediextaror = () => {
-setpedidoextaroer(!pedidoextaroer)
-}
-
-
-
-// ... dentro de tu componente Pedidoshome
-
-// Estado del formulario extraordinario
-const [pedidoExtra, setPedidoExtra] = useState({ nombre: "", costo: "", detalle: "" });
-
-const handleChangeExtra = (e) => {
-  const { name, value } = e.target;
-  setPedidoExtra(prev => ({ ...prev, [name]: value }));
-};
-
-const handleGuardarExtra = () => {
-  if (!pedidoExtra.nombre || !pedidoExtra.costo) {
-    alert("⚠️ Debes ingresar nombre y costo");
-    return;
-  }
-
-  const nuevoPedido = {
-    id: Math.random().toString(36).substr(2, 9),
-    nombre: pedidoExtra.nombre,
-    detalle: pedidoExtra.detalle,
-    tipo: "extraordinario",
-    precioVenta: parseFloat(pedidoExtra.costo),
-    ingredientes: [],
+    setCantidades((prev) => ({ ...prev, [key]: 1 }));
   };
 
-  setOrdenes(prev => [...prev, nuevoPedido]);
-  alert("✅ Pedido extraordinario agregado");
+  /* enviar orden*/
 
-  // Resetear formulario
-  setPedidoExtra({ nombre: "", costo: "", detalle: "" });
-  setpedidoextaroer(false); // cerrar formulario
-};
+  const enviarOrden = () => {
+    if (ordenes.length === 0) {
+      alert("⚠️ No hay nada en la orden.");
+      return;
+    }
 
+    // Leer lo que ya hay en localStorage
+    const pedidoExistenteJSON = localStorage.getItem(`mesa${numero}`);
+    let pedidoExistente = [];
+    if (pedidoExistenteJSON) {
+      try {
+        pedidoExistente = JSON.parse(pedidoExistenteJSON);
+        if (!Array.isArray(pedidoExistente)) pedidoExistente = [];
+      } catch {
+        pedidoExistente = [];
+      }
+    }
 
+    // Combinar pedidos anteriores con los nuevos
+    const pedidosCombinados = [...pedidoExistente, ...ordenes];
 
+    const resumen = pedidosCombinados.map((o) => `${o.nombre}`).join(" | ");
 
-/*borarar item en el carrito */
+    const mensaje = `Tu pedido ha sido enviado: ${resumen}. ¡Gracias!`;
+    alert("✅ " + mensaje);
 
+    // Guardar la combinación en localStorage
+    localStorage.setItem(`mesa${numero}`, JSON.stringify(pedidosCombinados));
 
-// Función para eliminar un pedido del carrito
-const eliminarPedido = (id) => {
-  setOrdenes(prev => prev.filter(item => item.id !== id));
-};
+    setOrdenes([]);
+    ira(); // Redirigir a la mesa actual
+  };
 
+  /*fin d eenviar oden */
 
+  /*pedido extraoduinario*/
+  const [pedidoextaroer, setpedidoextaroer] = useState(false);
 
+  const pediextaror = () => {
+    setpedidoextaroer(!pedidoextaroer);
+  };
 
+  // ... dentro de tu componente Pedidoshome
+
+  // Estado del formulario extraordinario
+  const [pedidoExtra, setPedidoExtra] = useState({
+    nombre: "",
+    costo: "",
+    detalle: "",
+  });
+
+  const handleChangeExtra = (e) => {
+    const { name, value } = e.target;
+    setPedidoExtra((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleGuardarExtra = () => {
+    if (!pedidoExtra.nombre || !pedidoExtra.costo) {
+      alert("⚠️ Debes ingresar nombre y costo");
+      return;
+    }
+
+    const nuevoPedido = {
+      id: Math.random().toString(36).substr(2, 9),
+      nombre: pedidoExtra.nombre,
+      detalle: pedidoExtra.detalle,
+      tipo: "extraordinario",
+      precioVenta: parseFloat(pedidoExtra.costo),
+      ingredientes: [],
+    };
+
+    setOrdenes((prev) => [...prev, nuevoPedido]);
+    alert("✅ Pedido extraordinario agregado");
+
+    // Resetear formulario
+    setPedidoExtra({ nombre: "", costo: "", detalle: "" });
+    setpedidoextaroer(false); // cerrar formulario
+  };
+
+  /*borarar item en el carrito */
+
+  // Función para eliminar un pedido del carrito
+  const eliminarPedido = (id) => {
+    setOrdenes((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  /*pegtuasdepto*/
+  // 🔹 Diccionario global de preguntas/opciones (100% definido por ti)
+  const preguntasOpciones = {
+    huevos: {
+      pregunta: "Huevos:",
+      opciones: ["Revueltos", "Fritos", "Tibios", "Duros"],
+    },
+    "bebida caliente": {
+      pregunta: "Bebida caliente:",
+      opciones: ["Cafe", "Café con leche", "Té"],
+    },
+    "bebida fría": {
+      pregunta: "Jugo:",
+      opciones: ["Mora", "Fresa", "Papaya"],
+    },
+    Pancakes: {
+      pregunta: "¿Pancakes o Waffles?",
+      opciones: ["Pancakes", "Waffles"],
+    },
+  };
+
+  const [selecciones, setSelecciones] = useState({});
+
+  const handleSeleccion = (platoKey, pregunta, opcion) => {
+    setSelecciones((prev) => ({
+      ...prev,
+      [platoKey]: {
+        ...(prev[platoKey] || {}),
+        [pregunta]: opcion,
+      },
+    }));
+  };
+
+  console.log();
 
   return (
-    <article className='contefull'>
-     
-     
-             <article className='HEDER'>
-          <img
-            className='LOGOIMG'
-            src="https://res.cloudinary.com/db8e98ggo/image/upload/v1731124196/Que_esperas_._dqfhgg.png"
-            alt=""
-          />
-        </article>
-     
+    <article className="contefull">
+      <article className="HEDER">
+        <img
+          className="LOGOIMG"
+          src="https://res.cloudinary.com/db8e98ggo/image/upload/v1731124196/Que_esperas_._dqfhgg.png"
+          alt=""
+        />
+      </article>
 
-
-
-
-
-<div  className='coterbrbu'  >
-
+      <div className="coterbrbu">
         <input
           type="text"
           placeholder="Buscar plato..."
@@ -218,461 +256,420 @@ const eliminarPedido = (id) => {
           className="barra-busqueda"
         />
 
-  {/* Botón carrito */}
-      <button
-        onClick={() => setModalVisible(true)}
-      className='btncarrito'
-        aria-label="Ver carrito"
-      >
-        🛒
-        {ordenes.length > 0 && (
-          <span
-           className='indicadordepds'
-          >
-           
-          </span>
-        )}
-    
-    
-    
-    
-    
-    
-      </button>
-
-
-</div>
-
-
-
-
-
-
-
-
-{
-  pedidoextaroer?
-  
-  
-  <>
-{
-  pedidoextaroer && (
-    <div className="form-extra">
-      <h3>Pedido Extraordinario</h3>
-      <input
-        type="text"
-        name="nombre"
-        placeholder="Nombre del pedido"
-        value={pedidoExtra.nombre}
-        onChange={handleChangeExtra}
-      />
-      <input
-        type="number"
-        name="costo"
-        placeholder="Costo"
-        value={pedidoExtra.costo}
-        onChange={handleChangeExtra}
-      />
-      <textarea
-        name="detalle"
-        placeholder="Detalles adicionales"
-        value={pedidoExtra.detalle}
-        onChange={handleChangeExtra}
-      />
-      <button onClick={handleGuardarExtra}>
-        Guardar pedido extraordinario
-      </button>
-      <button
-        onClick={() => setpedidoextaroer(false)}
-        className="btn-cancelar"
-      >
-        Cancelar
-      </button>
-    </div>
-  )
-}
-
-
-  
-  </>
-  
-  :
-     
-   <>
-   
-   <button className='bntector'    onClick={pediextaror}   >
-  Pedido extraordinario
-</button>
-   
-     <section className='contepatps'>
-      
- 
-
-
-
-
-
-
-
-{Object.keys(menu).length === 0 ? (
-  <p style={{ textAlign: "center", fontSize: "1.2rem", color: "#6f00ff" }}>
-    ⏳ Cargando...
-  </p>
-) : (
-null
-)}
-
-
-
-        
-
-        {desayunos.length > 0 ?
-        < div className='contedesaynos' >
-        
-        <p className='tiosdesyunos'>Desayunos</p>
-       
-       
-        <ul className="lista-desayunos">
-          {desayunos.map(plato => {
-            const key = `desayuno-${plato.alias[0]}`;
-            return (
-              <li className='plato-item' key={key}>
-                <p><strong>{plato.alias[0]}</strong></p>
-
-                <div className="cantidad-container">
-                  <button onClick={() => handleCantidadChange(key, -1)}>-</button>
-                  <span className='cari'>{cantidades[key] || 1}</span>
-                  <button onClick={() => handleCantidadChange(key, 1)}>+</button>
-                </div>
-
-                <input
-                  type="text"
-                  className="nota-input"
-                  placeholder="Detalles"
-                  value={extras[key] || ""}
-                  onChange={(e) => handleExtraChange(key, e.target.value)}
-                />
-
-                <button
-                  className='btnagrag'
-                  onClick={() => handleAgregarPedido(key, plato)}
-                >
-                  Agregar el pedido
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-        
-        </div>
-        :
-        null
-         }
-    
-
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-        {desatigrillos.length > 0 ?
-        <div className='contedesaynos'>
-        <p className='tiotigrillo'>Tigrillos</p>
-
-        <ul className="lista-desayunos">
-          {desatigrillos.map(plato => {
-            const key = `tigrillo-${plato.alias[0]}`;
-            return (
-              <li className='plato-item' key={key}>
-                <p><strong>{plato.alias[0]}</strong></p>
-
-                <div className="cantidad-container">
-                  <button onClick={() => handleCantidadChange(key, -1)}>-</button>
-                  <span className='cari'>{cantidades[key] || 1}</span>
-                  <button onClick={() => handleCantidadChange(key, 1)}>+</button>
-                </div>
-
-                <input
-                  type="text"
-                  className="nota-input"
-                  placeholder="Detalles"
-                  value={extras[key] || ""}
-                  onChange={(e) => handleExtraChange(key, e.target.value)}
-                />
-
-                <button
-                  className='btnagrag'
-                  onClick={() => handleAgregarPedido(key, plato)}
-                >
-                  Agregar el pedido
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-        
-        </div>
-        :
-        null
-        }
-
-        
-        
-        
-        
-        {bolones.length > 0 ?
-      <div className='contedesaynos'>
-       <p className='tiotigrillo'>Bolones</p>
-        <ul className="lista-desayunos">
-          {bolones.map(plato => {
-            const key = `tigrillo-${plato.alias[0]}`;
-            return (
-              <li className='plato-item' key={key}>
-                <p><strong>{plato.alias[0]}</strong></p>
-
-                <div className="cantidad-container">
-                  <button onClick={() => handleCantidadChange(key, -1)}>-</button>
-                  <span className='cari'>{cantidades[key] || 1}</span>
-                  <button onClick={() => handleCantidadChange(key, 1)}>+</button>
-                </div>
-
-                <input
-                  type="text"
-                  className="nota-input"
-                  placeholder="Detalles"
-                  value={extras[key] || ""}
-                  onChange={(e) => handleExtraChange(key, e.target.value)}
-                />
-
-                <button
-                  className='btnagrag'
-                  onClick={() => handleAgregarPedido(key, plato)}
-                >
-                  Agregar el pedido
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-
+        {/* Botón carrito */}
+        <button
+          onClick={() => setModalVisible(true)}
+          className="btncarrito"
+          aria-label="Ver carrito"
+        >
+          🛒
+          {ordenes.length > 0 && <span className="indicadordepds"></span>}
+        </button>
       </div>
-        :
-        null
-        }
-      
-       
-       
-       
-       
-       
-       
-       
-        {pancakes.length > 0 ?
-        <div className='contedesaynos'>
-           <p className='tiosdesyunos'>Pancakes</p>
-       <ul className="lista-desayunos">
-          {pancakes.map(plato => {
-            const key = `pancakes-${plato.alias[0]}`;
-            return (
-              <li className='plato-item' key={key}>
-                <p><strong>{plato.alias[0]}</strong></p>
 
-                <div className="cantidad-container">
-                  <button onClick={() => handleCantidadChange(key, -1)}>-</button>
-                  <span className='cari'>{cantidades[key] || 1}</span>
-                  <button onClick={() => handleCantidadChange(key, 1)}>+</button>
-                </div>
+      {pedidoextaroer ? (
+        <>
+          {pedidoextaroer && (
+            <div className="form-extra">
+              <h3>Pedido Extraordinario</h3>
+              <input
+                type="text"
+                name="nombre"
+                placeholder="Nombre del pedido"
+                value={pedidoExtra.nombre}
+                onChange={handleChangeExtra}
+              />
+              <input
+                type="number"
+                name="costo"
+                placeholder="Costo"
+                value={pedidoExtra.costo}
+                onChange={handleChangeExtra}
+              />
+              <textarea
+                name="detalle"
+                placeholder="Detalles adicionales"
+                value={pedidoExtra.detalle}
+                onChange={handleChangeExtra}
+              />
+              <button onClick={handleGuardarExtra}>
+                Guardar pedido extraordinario
+              </button>
+              <button
+                onClick={() => setpedidoextaroer(false)}
+                className="btn-cancelar"
+              >
+                Cancelar
+              </button>
+            </div>
+          )}
+        </>
+      ) : (
+        <>
+          <button className="bntector" onClick={pediextaror}>
+            Pedido extraordinario
+          </button>
 
-                <input
-                  type="text"
-                  className="nota-input"
-                  placeholder="Detalles"
-                  value={extras[key] || ""}
-                  onChange={(e) => handleExtraChange(key, e.target.value)}
-                />
+          <section className="contepatps">
+            {Object.keys(menu).length === 0 ? (
+              <p
+                style={{
+                  textAlign: "center",
+                  fontSize: "1.2rem",
+                  color: "#6f00ff",
+                }}
+              >
+                ⏳ Cargando...
+              </p>
+            ) : null}
 
-                <button
-                  className='btnagrag'
-                  onClick={() => handleAgregarPedido(key, plato)}
-                >
-                  Agregar el pedido
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-        </div>
-        :
-        null
-        }
-      
-     
-     
-     
-     
-        {conbos.length > 0 ?
-        <div className='contedesaynos'>
-          <p className='tiosdesyunos'>Combos</p>
-           <ul className="lista-desayunos">
-          {conbos.map(plato => {
-            const key = `pancakes-${plato.alias[0]}`;
-          
-          
-          
-          
-          
-          
-          
-          
-          
-          
-            return (
-              <li className='plato-item' key={key}>
-                <p><strong>{plato.alias[0]}</strong></p>
+            {desayunos.length > 0 ? (
+              <div className="contedesaynos">
+                <p className="tiosdesyunos">Desayunos</p>
 
-                <div className="cantidad-container">
-                  <button onClick={() => handleCantidadChange(key, -1)}>-</button>
-                  <span className='cari'>{cantidades[key] || 1}</span>
-                  <button onClick={() => handleCantidadChange(key, 1)}>+</button>
-                </div>
+                <ul className="lista-desayunos">
+                  {desayunos.map((plato) => {
+                    const key = `desayuno-${plato.alias[0]}`;
+                    return (
+                      <li className="plato-item" key={key}>
+                        <p>
+                          <strong>{plato.alias[0]}</strong>
+                        </p>
 
-                <input
-                  type="text"
-                  className="nota-input"
-                  placeholder="Detalles"
-                  value={extras[key] || ""}
-                  onChange={(e) => handleExtraChange(key, e.target.value)}
-                />
+                        <div className="cantidad-container">
+                          <button onClick={() => handleCantidadChange(key, -1)}>
+                            -
+                          </button>
+                          <span className="cari">{cantidades[key] || 1}</span>
+                          <button onClick={() => handleCantidadChange(key, 1)}>
+                            +
+                          </button>
+                        </div>
 
-                <button
-                  className='btnagrag'
-                  onClick={() => handleAgregarPedido(key, plato)}
-                >
-                  Agregar el pedido
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-   
-        
-        </div>
-        :
-        null
-        }
-     
-   
-   
-   
-   
-   
-   
-        {bebidas.length > 0 ?
-        <div className='contedesaynos'>
-<p className='tiosdesyunos'>Bebidas</p>
-      <ul className="lista-desayunos">
-          {bebidas.map(plato => {
-            const key = `pancakes-${plato.alias[0]}`;
-            return (
-              <li className='plato-item' key={key}>
-                <p><strong>{plato.alias[0]}</strong></p>
+                        {plato.preguntas &&
+                          Object.keys(plato.preguntas).map((preguntaKey) => {
+                            const config = preguntasOpciones[preguntaKey];
+                            if (!config) return null;
 
-                <div className="cantidad-container">
-                  <button onClick={() => handleCantidadChange(key, -1)}>-</button>
-                  <span className='cari'>{cantidades[key] || 1}</span>
-                  <button onClick={() => handleCantidadChange(key, 1)}>+</button>
-                </div>
+                            return (
+                              <div key={preguntaKey} className="modal-item">
+                                <label className="lberpreguta">
+                                  {config.pregunta}
+                                </label>
 
-                <input
-                  type="text"
-                  className="nota-input"
-                  placeholder="Detalles"
-                  value={extras[key] || ""}
-                  onChange={(e) => handleExtraChange(key, e.target.value)}
-                />
+                                <select
+                                  className="selectpregunta"
+                                  value={selecciones[key]?.[preguntaKey] || ""}
+                                  onChange={(e) =>
+                                    handleSeleccion(
+                                      key,
+                                      preguntaKey,
+                                      e.target.value
+                                    )
+                                  }
+                                >
+                                  <option value="">Seleccione</option>
+                                  {config.opciones.map((op) => (
+                                    <option
+                                      className="iputisel"
+                                      key={op}
+                                      value={op}
+                                    >
+                                      {op}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            );
+                          })}
 
-                <button
-                  className='btnagrag'
-                  onClick={() => handleAgregarPedido(key, plato)}
-                >
-                  Agregar el pedido
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+                        <button
+                          className="btnagrag"
+                          onClick={() => handleAgregarPedido(key, plato)}
+                        >
+                          Agregar el pedido
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ) : null}
 
-        </div>
-        :
-        null 
-        
-        }
-        
-        
-  
+            {desatigrillos.length > 0 ? (
+              <div className="contedesaynos">
+                <p className="tiotigrillo">Tigrillos</p>
 
+                <ul className="lista-desayunos">
+                  {desatigrillos.map((plato) => {
+                    const key = `tigrillo-${plato.alias[0]}`;
+                    return (
+                      <li className="plato-item" key={key}>
+                        <p>
+                          <strong>{plato.alias[0]}</strong>
+                        </p>
 
+                        <div className="cantidad-container">
+                          <button onClick={() => handleCantidadChange(key, -1)}>
+                            -
+                          </button>
+                          <span className="cari">{cantidades[key] || 1}</span>
+                          <button onClick={() => handleCantidadChange(key, 1)}>
+                            +
+                          </button>
+                        </div>
 
+                        <input
+                          type="text"
+                          className="nota-input"
+                          placeholder="Detalles"
+                          value={extras[key] || ""}
+                          onChange={(e) =>
+                            handleExtraChange(key, e.target.value)
+                          }
+                        />
 
+                        <button
+                          className="btnagrag"
+                          onClick={() => handleAgregarPedido(key, plato)}
+                        >
+                          Agregar el pedido
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ) : null}
 
+            {bolones.length > 0 ? (
+              <div className="contedesaynos">
+                <p className="tiotigrillo">Bolones</p>
+                <ul className="lista-desayunos">
+                  {bolones.map((plato) => {
+                    const key = `tigrillo-${plato.alias[0]}`;
+                    return (
+                      <li className="plato-item" key={key}>
+                        <p>
+                          <strong>{plato.alias[0]}</strong>
+                        </p>
 
-      </section>
+                        <div className="cantidad-container">
+                          <button onClick={() => handleCantidadChange(key, -1)}>
+                            -
+                          </button>
+                          <span className="cari">{cantidades[key] || 1}</span>
+                          <button onClick={() => handleCantidadChange(key, 1)}>
+                            +
+                          </button>
+                        </div>
 
-   </>  
-     
-   
-}
+                        <input
+                          type="text"
+                          className="nota-input"
+                          placeholder="Detalles"
+                          value={extras[key] || ""}
+                          onChange={(e) =>
+                            handleExtraChange(key, e.target.value)
+                          }
+                        />
 
+                        <button
+                          className="btnagrag"
+                          onClick={() => handleAgregarPedido(key, plato)}
+                        >
+                          Agregar el pedido
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ) : null}
 
-   
-    
+            {pancakes.length > 0 ? (
+              <div className="contedesaynos">
+                <p className="tiosdesyunos">Pancakes</p>
+                <ul className="lista-desayunos">
+                  {pancakes.map((plato) => {
+                    const key = `pancakes-${plato.alias[0]}`;
+                    return (
+                      <li className="plato-item" key={key}>
+                        <p>
+                          <strong>{plato.alias[0]}</strong>
+                        </p>
+
+                        <div className="cantidad-container">
+                          <button onClick={() => handleCantidadChange(key, -1)}>
+                            -
+                          </button>
+                          <span className="cari">{cantidades[key] || 1}</span>
+                          <button onClick={() => handleCantidadChange(key, 1)}>
+                            +
+                          </button>
+                        </div>
+
+                        <input
+                          type="text"
+                          className="nota-input"
+                          placeholder="Detalles"
+                          value={extras[key] || ""}
+                          onChange={(e) =>
+                            handleExtraChange(key, e.target.value)
+                          }
+                        />
+
+                        <button
+                          className="btnagrag"
+                          onClick={() => handleAgregarPedido(key, plato)}
+                        >
+                          Agregar el pedido
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ) : null}
+
+            {conbos.length > 0 ? (
+              <div className="contedesaynos">
+                <p className="tiosdesyunos">Combos</p>
+                <ul className="lista-desayunos">
+                  {conbos.map((plato) => {
+                    const key = `pancakes-${plato.alias[0]}`;
+
+                    return (
+                      <li className="plato-item" key={key}>
+                        <p>
+                          <strong>{plato.alias[0]}</strong>
+                        </p>
+
+                        <div className="cantidad-container">
+                          <button onClick={() => handleCantidadChange(key, -1)}>
+                            -
+                          </button>
+                          <span className="cari">{cantidades[key] || 1}</span>
+                          <button onClick={() => handleCantidadChange(key, 1)}>
+                            +
+                          </button>
+                        </div>
+
+                        <input
+                          type="text"
+                          className="nota-input"
+                          placeholder="Detalles"
+                          value={extras[key] || ""}
+                          onChange={(e) =>
+                            handleExtraChange(key, e.target.value)
+                          }
+                        />
+
+                        <button
+                          className="btnagrag"
+                          onClick={() => handleAgregarPedido(key, plato)}
+                        >
+                          Agregar el pedido
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ) : null}
+
+            {bebidas.length > 0 ? (
+              <div className="contedesaynos">
+                <p className="tiosdesyunos">Bebidas</p>
+                <ul className="lista-desayunos">
+                  {bebidas.map((plato) => {
+                    const key = `pancakes-${plato.alias[0]}`;
+                    return (
+                      <li className="plato-item" key={key}>
+                        <p>
+                          <strong>{plato.alias[0]}</strong>
+                        </p>
+
+                        <div className="cantidad-container">
+                          <button onClick={() => handleCantidadChange(key, -1)}>
+                            -
+                          </button>
+                          <span className="cari">{cantidades[key] || 1}</span>
+                          <button onClick={() => handleCantidadChange(key, 1)}>
+                            +
+                          </button>
+                        </div>
+
+                        <input
+                          type="text"
+                          className="nota-input"
+                          placeholder="Detalles"
+                          value={extras[key] || ""}
+                          onChange={(e) =>
+                            handleExtraChange(key, e.target.value)
+                          }
+                        />
+
+                        <button
+                          className="btnagrag"
+                          onClick={() => handleAgregarPedido(key, plato)}
+                        >
+                          Agregar el pedido
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ) : null}
+          </section>
+        </>
+      )}
 
       {/* Modal carrito */}
       {modalVisible && (
         <div
           onClick={() => setModalVisible(false)}
           style={{
-            position: 'fixed',
-            top: 0, left: 0, right: 0, bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
             zIndex: 9999,
-            color: ' #6f00ff'
+            color: " #6f00ff",
           }}
         >
           <div
-            onClick={e => e.stopPropagation()} // evitar que cierre al hacer click dentro
+            onClick={(e) => e.stopPropagation()} // evitar que cierre al hacer click dentro
             style={{
-              backgroundColor: 'white',
+              backgroundColor: "white",
               padding: 20,
               borderRadius: 10,
-              maxWidth: '90%',
-              maxHeight: '80%',
-              overflowY: 'auto',
-              width: '400px',
-              display: 'flex',
-              flexDirection: 'column',
-              boxShadow: '0 2px 10px rgba(0,0,0,0.3)',
-              position: 'relative'
+              maxWidth: "90%",
+              maxHeight: "80%",
+              overflowY: "auto",
+              width: "400px",
+              display: "flex",
+              flexDirection: "column",
+              boxShadow: "0 2px 10px rgba(0,0,0,0.3)",
+              position: "relative",
             }}
           >
             <button
               onClick={() => setModalVisible(false)}
               style={{
-                position: 'absolute',
+                position: "absolute",
                 top: 10,
                 right: 10,
-                background: 'transparent',
-                border: 'none',
-                fontSize: '20px',
-                cursor: 'pointer'
+                background: "transparent",
+                border: "none",
+                fontSize: "20px",
+                cursor: "pointer",
               }}
               aria-label="Cerrar carrito"
             >
@@ -684,55 +681,41 @@ null
             {ordenes.length === 0 ? (
               <p>No hay pedidos agregados.</p>
             ) : (
-             
-               <div  className='conteordene'  >
-           
-           
-             <ul     style={{ listStyle: 'none', padding: 0 }}>
-                {ordenes.map(item => (
-                  <li key={item.id} className='rmunpedi'    >
-                    <strong  className='brdpltyo'  >{item.nombre}</strong>
-                    {item.detalle && <p style={{ margin: '4px 0' }}>Detalle: {item.detalle}</p>}
-                    <small style={{ color: '#555' }}>Tipo: {item.tipo}</small>
-                 <button
-  onClick={() => eliminarPedido(item.id)}
- className='btnelimi'
->
-  x
-</button>
+              <div className="conteordene">
+                <ul style={{ listStyle: "none", padding: 0 }}>
+                  {ordenes.map((item) => (
+                    <li key={item.id} className="rmunpedi">
+                      <strong className="brdpltyo">{item.nombre}</strong>
+                      {item.detalle && (
+                        <ul className="detallespedidos">
+                          {Object.entries(item.detalle).map(([k, v]) => (
+                            <li key={k}>
+                              <strong>{k}:</strong> {v}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      <small style={{ color: "#555" }}>Tipo: {item.tipo}</small>
+                      <button
+                        onClick={() => eliminarPedido(item.id)}
+                        className="btnelimi"
+                      >
+                        x
+                      </button>
+                    </li>
+                  ))}
+                </ul>
 
-                  </li>
-                ))}
-            
-            
-            
-              </ul>
-            
-            
-                 <button onClick={enviarOrden}     className='btnenviarpedo'>
-          enviar orden
-         </button>
-            
+                <button onClick={enviarOrden} className="btnenviarpedo">
+                  enviar orden
+                </button>
               </div>
             )}
-         
-         
-    
           </div>
-        
-        
-        
-        
-        
-        
-        
         </div>
       )}
 
       <Navar />
-
-
-
     </article>
   );
 };

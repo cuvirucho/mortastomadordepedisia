@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navar from "../utilidales/Navar";
 import { db } from "../Firebase/Firebase";
-import { addDoc, collection, doc } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs } from "firebase/firestore";
 
 const Mesashome = () => {
   const { numero } = useParams();
@@ -67,6 +67,11 @@ const Mesashome = () => {
     delete nuevosPagos[id];
     setPagosPorItem(nuevosPagos);
     localStorage.setItem("pagosPorItem", JSON.stringify(nuevosPagos));
+
+    setModalitrocodigo(false);
+
+    setcodgoigresado("");
+    setelemtoaelimiar(null);
   };
 
   const toggleSeleccion = (id) => {
@@ -312,6 +317,41 @@ const Mesashome = () => {
     navigate(`/factura/${numero}`);
   };
 
+  /*eliminar un prducto co coidgo*/
+
+  const [modalitrocodigo, setModalitrocodigo] = useState(false);
+  const [elemtoaelimiar, setelemtoaelimiar] = useState(null);
+  const [codgoigresado, setcodgoigresado] = useState("");
+  const getcodio = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "codigoyborrados"));
+      const codigos = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      return codigos;
+    } catch (error) {
+      console.error("Error al obtener datos:", error);
+      return [];
+    }
+  };
+
+  const borrarProductoPorCodigo = async (id) => {
+    const codigos = await getcodio();
+
+    if (codigos[0].codigo === codgoigresado.trim()) {
+      borrarItem(id);
+    } else {
+      alert("❌ Código incorrecto");
+    }
+  };
+
+  const borraraccion = (id) => {
+    setModalitrocodigo(true);
+
+    setelemtoaelimiar(id);
+  };
+
   return (
     <div className="mesascontainerpadre">
       <article className="HEDER">
@@ -346,16 +386,44 @@ const Mesashome = () => {
                       {Object.entries(p.respuestas).map(
                         ([clave, valor], idx) => (
                           <li key={idx} className="respuesta-item">
-                            {clave}: {valor}
+                            <strong>{clave}:</strong>
+
+                            {typeof valor === "object" && valor !== null ? (
+                              <ul className="respuesta-sublista">
+                                {Object.entries(valor).map(
+                                  ([subClave, subValor], i) =>
+                                    subValor && <li key={i}>{subClave}</li>
+                                )}
+                              </ul>
+                            ) : (
+                              <span> {String(valor)}</span>
+                            )}
                           </li>
                         )
                       )}
                     </ul>
                   ) : p.detalle ? (
-                    <div className="detalles-texto">{p.detalle}</div>
+                    <div
+                      className={`detalles-texto ${
+                        itemsSeleccionados.includes(p.id) ? "activo" : ""
+                      }`}
+                    >
+                      {typeof p.detalle === "object" && p.detalle !== null ? (
+                        <ul className="respuesta-sublista">
+                          {Object.entries(p.detalle).map(([k, v], i) => (
+                            <li key={i}>
+                              {k}
+                              <strong>: {String(v)}</strong>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <span>{String(p.detalle)}</span>
+                      )}
+                    </div>
                   ) : null}
 
-                  <button className="btnx" onClick={() => borrarItem(p.id)}>
+                  <button className="btnx" onClick={() => borraraccion(p.id)}>
                     X
                   </button>
                   {pagados.includes(p.id) && (
@@ -554,7 +622,10 @@ const Mesashome = () => {
       {mostrarModalVuelto && (
         <div className="modal-overlay">
           <div className="modal">
-            <h3>Hay que cobrar {totalParcial ? totalParcial : totalPedido} </h3>
+            <h3>
+              Hay que cobrar{" "}
+              {totalParcial ? totalParcial.toFixed(2) : totalPedido.toFixed(2)}{" "}
+            </h3>
             <h3>
               Ingrese el monto recibido (
               {accionPago === "completo" ? "Pago completo" : "Pago parcial"})
@@ -596,6 +667,44 @@ const Mesashome = () => {
         </div>
       )}
 
+      {/*MODAL INTROCIR CODIGO PARA BORRAR*/}
+
+      {modalitrocodigo && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h4>Ingrese el código del producto a borrar</h4>
+            <input
+              type="number"
+              placeholder="Código del producto"
+              value={codgoigresado}
+              onChange={(e) => setcodgoigresado(e.target.value)}
+              style={{
+                marginTop: "10px",
+                borderRadius: "1rem",
+                padding: "8px",
+                border: "none",
+              }}
+            />
+            <button
+              onClick={() => {
+                borrarProductoPorCodigo(elemtoaelimiar);
+              }}
+            >
+              Borrar Producto
+            </button>
+            <button
+              className="cerrar"
+              onClick={() => {
+                setModalitrocodigo(false);
+                setcodgoigresado("");
+                setelemtoaelimiar(null);
+              }}
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
       <Navar />
     </div>
   );
