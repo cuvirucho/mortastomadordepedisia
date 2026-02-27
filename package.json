@@ -12,7 +12,7 @@
   "dependencies": {
     "@dicebear/collection": "^9.2.3",
     "@dicebear/core": "^9.2.3",
-    "@google/generative-ai": "^0.6.0",
+    "@google/generative-ai": "^0.24.1",
     "firebase": "^12.3.0",
     "html5-qrcode": "^2.3.8",
     "jspdf": "^3.0.3",

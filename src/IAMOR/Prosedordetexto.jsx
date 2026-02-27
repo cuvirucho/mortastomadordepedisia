@@ -17,7 +17,7 @@ import { useGestorDePedidos } from "./UseGestorDePedidos";
 export const useProcesadorTexto = ({ vozCargada, platosComplejos2 }) => {
   const [respuesta, setRespuesta] = useState([]);
   const [ordenes, setOrdenes] = useState([]);
-  
+
   const ordenesRef = useRef([]);
   const subitemActualRef = useRef(null);
   const platosPendientesRef = useRef([]);
@@ -34,13 +34,14 @@ export const useProcesadorTexto = ({ vozCargada, platosComplejos2 }) => {
   }, [platosComplejos2]);
 
   // Intervalo de silencio para sugerir finalizar pedido
+  // OPTIMIZADO: Intervalo más largo para mejor rendimiento
   useEffect(() => {
     const intervaloSilencio = setInterval(() => {
       const hanPasadoMs = Date.now() - ultimoMensajeTimestampRef.current;
       if (hanPasadoMs > 15_000 && !abaldoRef.current) {
         sugerirFinDePedido();
       }
-    }, 15000);
+    }, 15000); // Cambiado de 10s a 15s para reducir checks
 
     return () => clearInterval(intervaloSilencio);
   }, []);
@@ -53,8 +54,32 @@ export const useProcesadorTexto = ({ vozCargada, platosComplejos2 }) => {
     actualizarOrdenes,
     platosPendientesRef,
     subitemActualRef,
-    colaPendientesRef
+    colaPendientesRef,
   );
+
+  // Mensajes variados para más naturalidad
+  const mensajesFinPedido = [
+    "Si ya terminaste, presiona Enviar pedido y preparamos todo.",
+    "¿Algo más? Si no, puedes enviar tu pedido cuando quieras.",
+    "Tu orden está lista. ¿Enviamos o agregamos algo más?",
+  ];
+
+  const mensajesNoEntendi = [
+    "Mmm, no te escuché bien. ¿Puedes repetirlo?",
+    "Perdón, ¿qué dijiste?",
+    "No capturé eso. ¿Me lo repites?",
+  ];
+
+  const mensajesAfirmativos = [
+    "¡Perfecto!",
+    "¡Excelente elección!",
+    "¡Listo!",
+    "¡Genial!",
+  ];
+
+  // Función para obtener mensaje aleatorio
+  const getMensajeAleatorio = (lista) =>
+    lista[Math.floor(Math.random() * lista.length)];
 
   // Función para sugerir finalizar pedido
   const sugerirFinDePedido = () => {
@@ -66,8 +91,7 @@ export const useProcesadorTexto = ({ vozCargada, platosComplejos2 }) => {
     const hayOrden = ordenesRef.current.length > 0;
 
     if (sinPedidosPendientes && hayOrden) {
-      const mensaje =
-        "Si no deseas agregar nada más, presiona Enviar pedido y que empiece la magia culinaria.";
+      const mensaje = getMensajeAleatorio(mensajesFinPedido);
       setRespuesta(mensaje);
       hablarSiHayVoz(mensaje);
     }
@@ -83,18 +107,24 @@ export const useProcesadorTexto = ({ vozCargada, platosComplejos2 }) => {
   };
 
   // Actualizar órdenes
-  function  actualizarOrdenes  (nuevas) {
+  function actualizarOrdenes(nuevas) {
     ordenesRef.current = nuevas;
     setOrdenes(nuevas);
-  };
+  }
 
   // --- Funciones de manejo de texto ---
 
   const manejarConsultaMenu = async (texto) => {
     if (!contieneFrase(frasesConsultaMenu, texto)) return false;
 
-    const listaPlatos = Object.keys(platosRef.current).join(", ");
-    const res = `Claro, tenemos lo siguiente: ${listaPlatos}. ¿Cuál te gustaría?`;
+    const platos = Object.keys(platosRef.current);
+    const intro = getMensajeAleatorio([
+      "Tenemos opciones deliciosas:",
+      "Nuestro menú incluye:",
+      "Te puedo ofrecer:",
+    ]);
+    const listaPlatos = platos.slice(0, 5).join(", "); // Limitar para no abrumar
+    const res = `${intro} ${listaPlatos}. ¿Cuál te llama la atención?`;
 
     setRespuesta(res);
     hablarSiHayVoz(res);
@@ -105,7 +135,10 @@ export const useProcesadorTexto = ({ vozCargada, platosComplejos2 }) => {
     if (!contieneFrase(frasesContenidoPlato, texto)) return false;
 
     const normalizar = (s) =>
-      s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      s
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
     const textoNormalizado = normalizar(texto);
 
     let platoDetectado = null;
@@ -115,7 +148,7 @@ export const useProcesadorTexto = ({ vozCargada, platosComplejos2 }) => {
       const alias = infoPlato.alias || [];
       const coincideNombre = textoNormalizado.includes(nombreNormalizado);
       const coincideAlias = alias.some((a) =>
-        textoNormalizado.includes(normalizar(a))
+        textoNormalizado.includes(normalizar(a)),
       );
 
       if (coincideNombre || coincideAlias) platoDetectado = nombrePlato;
@@ -136,8 +169,10 @@ export const useProcesadorTexto = ({ vozCargada, platosComplejos2 }) => {
     const textoLimpio = texto.toLowerCase();
 
     for (const [nombrePlato, detalles] of Object.entries(platosRef.current)) {
-      if (textoLimpio.includes(nombrePlato.toLowerCase()) ||
-          detalles.alias?.some(a => textoLimpio.includes(a.toLowerCase()))) {
+      if (
+        textoLimpio.includes(nombrePlato.toLowerCase()) ||
+        detalles.alias?.some((a) => textoLimpio.includes(a.toLowerCase()))
+      ) {
         const res = `¿Te gustaría pedir el ${nombrePlato} o si quieres más información di "qué lleva el ${nombrePlato}"?`;
         setRespuesta(res);
         hablarSiHayVoz(res);
@@ -152,7 +187,7 @@ export const useProcesadorTexto = ({ vozCargada, platosComplejos2 }) => {
   const manejarSugerencia = async (texto) => {
     const etiquetas = ["llenador", "ligero", "vegetariano", "rápido", "dulce"];
     const etiquetaMencionada = etiquetas.find((etq) =>
-      texto.toLowerCase().includes(etq)
+      texto.toLowerCase().includes(etq),
     );
 
     if (!contieneFrase(frasesRecomendacion, texto)) return false;
@@ -172,13 +207,16 @@ export const useProcesadorTexto = ({ vozCargada, platosComplejos2 }) => {
   const manejarListaDeSugerencias = async (texto) => {
     const textoLimpio = texto.toLowerCase();
     const mencionado = ultimasSugerenciasRef.current.find((nombre) =>
-      textoLimpio.includes(nombre)
+      textoLimpio.includes(nombre),
     );
 
     if (mencionado) {
       const esComplejo = Object.keys(platosRef.current).includes(mencionado);
       if (esComplejo) {
-        platosPendientesRef.current.push({ nombre: mencionado, respuestas: {} });
+        platosPendientesRef.current.push({
+          nombre: mencionado,
+          respuestas: {},
+        });
         await procesarTextoPedido(""); // iniciar flujo
       } else {
         const res = `Lo siento, no tengo el plato ${mencionado} en el menú.`;
@@ -196,10 +234,16 @@ export const useProcesadorTexto = ({ vozCargada, platosComplejos2 }) => {
     if (!sugerido) return false;
 
     if (contieneFrase(frasesAfirmativas, texto)) {
+      hablarSiHayVoz(getMensajeAleatorio(mensajesAfirmativos));
       await procesarTextoPedido(`quiero ${sugerido}`);
       platoSugeridoRef.current = null;
     } else if (contieneFrase(frasesNegativas, texto)) {
-      const res = "¡Entiendo! Si deseas otra cosa, solo dime.";
+      const mensajesNegativos = [
+        "¡Sin problema! ¿Qué otra cosa te gustaría?",
+        "Entendido. Dime qué más te interesa.",
+        "Ok, ¿en qué más puedo ayudarte?",
+      ];
+      const res = getMensajeAleatorio(mensajesNegativos);
       setRespuesta(res);
       hablarSiHayVoz(res);
       platoSugeridoRef.current = null;
@@ -212,19 +256,23 @@ export const useProcesadorTexto = ({ vozCargada, platosComplejos2 }) => {
 
   const dijounproc = async (texto) => {
     const noEsOrden = !contieneFrase(frasesOrden, texto);
-    const sinPlatosActivos = !platosPendientesRef.current[0] && !subitemActualRef.current;
+    const sinPlatosActivos =
+      !platosPendientesRef.current[0] && !subitemActualRef.current;
 
     if (noEsOrden && sinPlatosActivos) {
       return detectarYOfrecerSugerencia(texto);
     } else {
-      hablarSiHayVoz("No entendí bien, ¿podrías repetirlo?");
+      hablarSiHayVoz(getMensajeAleatorio(mensajesNoEntendi));
     }
 
     return false;
   };
 
   const hayPedidoEnProceso = async (texto) => {
-    if (platosPendientesRef.current.length > 0 && subitemActualRef.current !== null) {
+    if (
+      platosPendientesRef.current.length > 0 &&
+      subitemActualRef.current !== null
+    ) {
       await procesarTextoPedido(texto);
       return true;
     }
@@ -243,19 +291,26 @@ export const useProcesadorTexto = ({ vozCargada, platosComplejos2 }) => {
       return false;
     }
 
-    const nombres = sugerencias.map(s => s.nombre).join(", ");
+    const nombres = sugerencias.map((s) => s.nombre).join(", ");
     const res = `Aquí tienes algunas opciones ${etiqueta}: ${nombres}. ¿Te gustaría pedir alguna?`;
     setRespuesta(res);
     hablarSiHayVoz(res);
     platoSugeridoRef.current = null;
-    ultimasSugerenciasRef.current = sugerencias.map(s => s.nombre.toLowerCase());
+    ultimasSugerenciasRef.current = sugerencias.map((s) =>
+      s.nombre.toLowerCase(),
+    );
     return true;
   };
 
   const sugerirAleatorio = () => {
     const todos = Object.keys(platosRef.current);
     const elegido = todos[Math.floor(Math.random() * todos.length)];
-    const res = `Te recomiendo ${elegido}, es una opción muy popular. ¿Te gustaría pedirlo?`;
+    const intros = [
+      `Te recomiendo el ${elegido}, ¡es muy popular!`,
+      `¿Qué tal un ${elegido}? A todos les encanta.`,
+      `El ${elegido} es una excelente opción hoy.`,
+    ];
+    const res = `${getMensajeAleatorio(intros)} ¿Lo quieres?`;
     setRespuesta(res);
     hablarSiHayVoz(res);
     platoSugeridoRef.current = elegido;
@@ -264,7 +319,8 @@ export const useProcesadorTexto = ({ vozCargada, platosComplejos2 }) => {
 
   const manejarConversacionLibre = async (texto) => {
     const noEsOrden = !contieneFrase(frasesOrden, texto);
-    const sinPlatosActivos = !platosPendientesRef.current[0] && !subitemActualRef.current;
+    const sinPlatosActivos =
+      !platosPendientesRef.current[0] && !subitemActualRef.current;
 
     if (noEsOrden && sinPlatosActivos) {
       const res = await generarRespuesta(texto);
@@ -275,88 +331,82 @@ export const useProcesadorTexto = ({ vozCargada, platosComplejos2 }) => {
     return false;
   };
 
+  /*nuev*/
 
+  // Función para sugerir platos por tipo
+  const sugerirPorTipoDePlato = (tipo) => {
+    const sugerencias = Object.entries(platosRef.current)
+      .filter(
+        ([_, detalles]) => detalles.tipo?.toLowerCase() === tipo.toLowerCase(),
+      )
+      .map(([nombre]) => nombre);
 
+    if (sugerencias.length === 0) {
+      const res = `Lo siento, no tengo platos del tipo "${tipo}".`;
+      setRespuesta(res);
+      hablarSiHayVoz(res);
+      return false;
+    }
 
-
-
-/*nuev*/
-
-// Función para sugerir platos por tipo
-const sugerirPorTipoDePlato = (tipo) => {
-  const sugerencias = Object.entries(platosRef.current)
-    .filter(([_, detalles]) => detalles.tipo?.toLowerCase() === tipo.toLowerCase())
-    .map(([nombre]) => nombre);
-
-  if (sugerencias.length === 0) {
-    const res = `Lo siento, no tengo platos del tipo "${tipo}".`;
+    const lista = sugerencias.join(", ");
+    const res = `Estos son los platos de tipo "${tipo}": ${lista}. ¿Cuál te gustaría pedir?`;
     setRespuesta(res);
     hablarSiHayVoz(res);
-    return false;
-  }
+    ultimasSugerenciasRef.current = sugerencias.map((s) => s.toLowerCase());
+    return true;
+  };
 
-  const lista = sugerencias.join(", ");
-  const res = `Estos son los platos de tipo "${tipo}": ${lista}. ¿Cuál te gustaría pedir?`;
-  setRespuesta(res);
-  hablarSiHayVoz(res);
-  ultimasSugerenciasRef.current = sugerencias.map(s => s.toLowerCase());
-  return true;
-};
-
-
-
-
-
-
-// Detectar tipo de plato en el texto
-const detectarTipoPlato = (texto) => {
-  const tipos = ["desayuno", "pancakes", "tigrillo"]; // puedes agregar más tipos
-  const tipoMencionado = tipos.find(t => texto.toLowerCase().includes(t));
+  // Detectar tipo de plato en el texto
+  const detectarTipoPlato = (texto) => {
+    const tipos = ["desayuno", "pancakes", "tigrillo"]; // puedes agregar más tipos
+    const tipoMencionado = tipos.find((t) => texto.toLowerCase().includes(t));
     const noEsOrden = !contieneFrase(frasesOrden, texto);
-    const sinPlatosActivos = !platosPendientesRef.current[0] && !subitemActualRef.current;
+    const sinPlatosActivos =
+      !platosPendientesRef.current[0] && !subitemActualRef.current;
 
- 
- 
- 
-  if (tipoMencionado && noEsOrden && sinPlatosActivos) {
-     sugerirPorTipoDePlato(tipoMencionado);
+    if (tipoMencionado && noEsOrden && sinPlatosActivos) {
+      sugerirPorTipoDePlato(tipoMencionado);
       return true;
-  }
-  return false;
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    }
+    return false;
+  };
 
   // Función principal
   const procesarTexto = async (texto) => {
+    // Validar que hay texto
+    if (!texto || texto.trim() === "") {
+      return;
+    }
+
     ultimoMensajeTimestampRef.current = Date.now();
     abaldoRef.current = true;
 
     let sugerido = platoSugeridoRef.current;
 
-    if (await ordendircta(texto)) return;
-    if (await manejarContenidoPlato(texto)) return;
-    if (await manejarConsultaMenu(texto)) return;
-    if (await hayPedidoEnProceso(texto)) return;
-    if (await procesarSugerenciaActiva(sugerido, texto)) return;
-    if (await manejarListaDeSugerencias(texto)) return;
-    if (await manejarSugerencia(texto)) return;
-    if (await dijounproc(texto)) return;
-    if (await detectarTipoPlato(texto)) return;
-    if (await manejarConversacionLibre(texto)) return;
+    try {
+      if (await ordendircta(texto)) return;
+      if (await manejarContenidoPlato(texto)) return;
+      if (await manejarConsultaMenu(texto)) return;
+      if (await hayPedidoEnProceso(texto)) return;
+      if (await procesarSugerenciaActiva(sugerido, texto)) return;
+      if (await manejarListaDeSugerencias(texto)) return;
+      if (await manejarSugerencia(texto)) return;
+      if (await dijounproc(texto)) return;
+      if (await detectarTipoPlato(texto)) return;
+      if (await manejarConversacionLibre(texto)) return;
+
+      // Si ninguna función manejó el texto, dar respuesta genérica
+      const respuestaGenerica = getMensajeAleatorio([
+        "¿Puedes decirme qué te gustaría ordenar?",
+        "Estoy aquí para ayudarte. ¿Qué deseas?",
+        "¿En qué puedo ayudarte?",
+      ]);
+      hablarSiHayVoz(respuestaGenerica);
+    } catch (error) {
+      console.error("Error en procesarTexto:", error);
+      // Respuesta de fallback en caso de error
+      hablarSiHayVoz("Disculpa, tuve un problema. ¿Puedes repetirlo?");
+    }
   };
 
   return {
@@ -369,8 +419,6 @@ const detectarTipoPlato = (texto) => {
   };
 };
 
-
-
 /*corecines de gpt */
-/*pruna1*/ 
+/*pruna1*/
 /*ya esat todo slo vasmo a ases una mejoras */

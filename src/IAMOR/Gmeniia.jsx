@@ -1,10 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
-
-
-
 
 // (Opcional) Namespacing para localStorage
 const keyFor = (name) => `${name}`;
@@ -12,7 +8,7 @@ const keyFor = (name) => `${name}`;
 const getMenuFromStorage = () => {
   try {
     // Si no quieres namespacing, usa "menu" directamente
-    const raw = localStorage.getItem(keyFor("menu")); 
+    const raw = localStorage.getItem(keyFor("menu"));
     return raw ? JSON.parse(raw) : null;
   } catch (e) {
     console.warn("No se pudo leer/parsear el menú de localStorage:", e);
@@ -25,29 +21,23 @@ const formatMenu = (menu) => {
   if (!menu) return "No hay menú cargado.";
   if (Array.isArray(menu)) {
     return menu
-      .map((i) => `- ${i.nombre}${i.precio ? ` $${i.precio}` : ""}${i.descripcion ? `: ${i.descripcion}` : ""}`)
+      .map(
+        (i) =>
+          `- ${i.nombre}${i.precio ? ` $${i.precio}` : ""}${i.descripcion ? `: ${i.descripcion}` : ""}`,
+      )
       .join("\n");
   }
   return JSON.stringify(formatMenu(menu));
 };
 
- 
-
-
-
-
 export const generarRespuesta = async (texto) => {
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-8b" });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-    const menu = getMenuFromStorage();
-
-    
+  const menu = getMenuFromStorage();
 
   try {
-   
-   
-const result = await model.generateContent([
-  `
+    const result = await model.generateContent([
+      `
   
   PARAMETROS
   Responde de forma breve y natural en español de una manera  femenina conversadora no uses la palabrase ay , uy,amor o mi vida , se ingeniosa con tus respuetas
@@ -61,8 +51,8 @@ const result = await model.generateContent([
   
   responde a esto con los paremetros anterionres:
   "${texto}"
-  `
-]);
+  `,
+    ]);
 
     const response = result.response;
     return response.text(); // devuelve texto plano

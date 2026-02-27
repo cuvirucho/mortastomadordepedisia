@@ -1,105 +1,95 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import CaritaRobot from "./Caradeia";
-import OndaReactiva from "./OndaReactiva";
 import AuraReactiva from "./OndaReactiva";
 
-const ojosHabla = ["robocop","bulging","sensor","shade01","roundFrame02"];
-const bocasHabla = [  "smile02","smile01"];
-
-const ojosReposo = ["robocop","bulging","sensor","shade01","roundFrame02","hearts","roundFrame01"];
-const ojosParpadeo =["dizzy","happy"];
+const ojosReposo = ["robocop", "bulging", "sensor", "shade01", "roundFrame02"];
+const bocasHabla = ["smile02", "smile01"];
 const bocaCallado = "smile01";
 
 const getAleatorio = (lista) => lista[Math.floor(Math.random() * lista.length)];
-const tiempoAleatorio = (min, max) => Math.floor(Math.random() * (max - min)) + min;
 
-const RobotAnimado = () => {
-  const [ojos, setOjos] = useState("eva");
+// Detectar si es móvil
+const esMobile =
+  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent,
+  );
+
+const RobotAnimado = React.memo(() => {
+  const [ojos, setOjos] = useState("robocop");
   const [boca, setBoca] = useState(bocaCallado);
   const [hablando, setHablando] = useState(false);
 
-  const parpadeoTimeout = useRef(null);
-  const cambioOjosReposoInterval = useRef(null);
-  const monitoreoVozInterval = useRef(null);
+  const hablandoRef = useRef(false);
+  const animacionBocaInterval = useRef(null);
+  const ojosInterval = useRef(null);
+  const checkInterval = useRef(null);
 
-  // Monitorea si está hablando
+  // Monitoreo simple con setInterval - más predecible y eficiente
   useEffect(() => {
-    let animacionBocaInterval = null;
+    // Verificar estado de habla cada 300ms (suficiente para detectar cambios)
+    const intervaloCheck = esMobile ? 400 : 300;
 
-    monitoreoVozInterval.current = setInterval(() => {
+    checkInterval.current = setInterval(() => {
       const hablandoAhora = window.speechSynthesis.speaking;
-      setHablando(hablandoAhora);
 
-      if (hablandoAhora) {
-        clearInterval(cambioOjosReposoInterval.current);
-        clearTimeout(parpadeoTimeout.current);
+      if (hablandoAhora !== hablandoRef.current) {
+        hablandoRef.current = hablandoAhora;
+        setHablando(hablandoAhora);
 
-        // ⏱️ Inicia animación de boca al azar
-        if (!animacionBocaInterval) {
-          animacionBocaInterval = setInterval(() => {
-            setBoca(getAleatorio(bocasHabla));
-          }, 100); // cambia cada 180ms
+        if (hablandoAhora) {
+          // Iniciar animación de boca
+          if (!animacionBocaInterval.current) {
+            const intervaloBoca = esMobile ? 300 : 200;
+            animacionBocaInterval.current = setInterval(() => {
+              setBoca((prev) => (prev === "smile01" ? "smile02" : "smile01"));
+            }, intervaloBoca);
+          }
+        } else {
+          // Detener animación de boca
+          setBoca(bocaCallado);
+          if (animacionBocaInterval.current) {
+            clearInterval(animacionBocaInterval.current);
+            animacionBocaInterval.current = null;
+          }
         }
-
-      } else {
-        setBoca(bocaCallado);
-        clearInterval(animacionBocaInterval);
-        animacionBocaInterval = null;
       }
-    }, 75);
+    }, intervaloCheck);
+
+    // Cambio de ojos periódico (muy poco frecuente)
+    const intervaloOjos = esMobile ? 25000 : 18000;
+    ojosInterval.current = setInterval(() => {
+      if (!hablandoRef.current) {
+        setOjos(getAleatorio(ojosReposo));
+      }
+    }, intervaloOjos);
 
     return () => {
-      clearInterval(monitoreoVozInterval.current);
-      clearInterval(animacionBocaInterval);
+      clearInterval(checkInterval.current);
+      clearInterval(ojosInterval.current);
+      if (animacionBocaInterval.current) {
+        clearInterval(animacionBocaInterval.current);
+      }
     };
   }, []);
 
-  // Cuando está callado: ojos reposo + parpadeo ocasional
-  useEffect(() => {
-    if (!hablando) {
-      // Cambiar ojos cada 5–8 segundos
-      cambioOjosReposoInterval.current = setInterval(() => {
-        setOjos(getAleatorio(ojosReposo));
-      }, tiempoAleatorio(15000, 20000));
-
-      // Parpadeo ocasional cada 3–6s
-    // Parpadeo con ojos especiales (sensoriales)
-const iniciarParpadeo = () => {
-  parpadeoTimeout.current = setTimeout(() => {
-    const ojosPrevios = ojos;
-    const ojoFlash = getAleatorio(ojosParpadeo); // 👈 aleatorio llamativo
-    setOjos(ojoFlash);
-    setTimeout(() => {
-      setOjos(ojosPrevios);
-      iniciarParpadeo(); // reiniciar
-    }, 150);
-  }, tiempoAleatorio(6000, 7000));
-};
-
-      iniciarParpadeo();
-    }
-
-    return () => {
-      clearInterval(cambioOjosReposoInterval.current);
-      clearTimeout(parpadeoTimeout.current);
-    };
-  }, [hablando]);
+  // Memorizar el componente de carita para evitar re-renders innecesarios
+  const caritaMemo = useMemo(
+    () => <CaritaRobot ojos={ojos} boca={boca} />,
+    [ojos, boca],
+  );
 
   return (
-    <>
-    <div className="conetecarita" >
-
- <div className="robot-contenedor">
-  
-   <div className="envoltorio-carita">
-  <CaritaRobot ojos={ojos} boca={null} />
-  {hablando && <AuraReactiva hablando={hablando} />}
-</div>
-
-  </div>
+    <div className="conetecarita">
+      <div className="robot-contenedor">
+        <div className="envoltorio-carita">
+          {caritaMemo}
+          {hablando && <AuraReactiva hablando={hablando} />}
+        </div>
+      </div>
     </div>
-        </>
   );
-};
+});
+
+RobotAnimado.displayName = "RobotAnimado";
 
 export default RobotAnimado;
