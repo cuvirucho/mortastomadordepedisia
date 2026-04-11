@@ -17,6 +17,8 @@ const Comprashome = () => {
   const [editando, setEditando] = useState(null);
   const [nuevaCantidad, setNuevaCantidad] = useState("");
   const [guardando, setGuardando] = useState(false);
+  const [modalAbierto, setModalAbierto] = useState(false);
+  const [busquedaModal, setBusquedaModal] = useState("");
 
   const obtenerFechaHoy = () => {
     const hoy = new Date();
@@ -122,6 +124,22 @@ const Comprashome = () => {
       );
       await addDoc(listasRef, listaParaEnviar);
 
+      // Crear mensaje para WhatsApp
+      const fechaHoy = obtenerFechaHoy();
+      let mensajeWhatsApp = `LISTA DE COMPRAS\nFecha: ${fechaHoy}\n\n`;
+
+      listaCompras.forEach((item, index) => {
+        mensajeWhatsApp += `${index + 1}. ${item.nombre}\n`;
+      });
+
+      mensajeWhatsApp += `\nTotal: ${listaCompras.length} productos`;
+
+      // Codificar mensaje para URL
+      const mensajeCodificado = encodeURIComponent(mensajeWhatsApp);
+
+      // Abrir WhatsApp para que el usuario elija a quién enviar
+      window.open(`https://wa.me/?text=${mensajeCodificado}`, "_blank");
+
       console.log("Lista enviada:", listaParaEnviar);
       alert("✅ Lista de compras enviada exitosamente");
 
@@ -141,6 +159,11 @@ const Comprashome = () => {
   // Filtrar productos por búsqueda
   const productosFiltradosBusqueda = todosProductos.filter((producto) =>
     producto.nombre.toLowerCase().includes(busqueda.toLowerCase()),
+  );
+
+  // Filtrar productos para el modal
+  const productosFiltradosModal = todosProductos.filter((producto) =>
+    producto.nombre.toLowerCase().includes(busquedaModal.toLowerCase()),
   );
 
   // Función para actualizar cantidad existente
@@ -495,6 +518,25 @@ const Comprashome = () => {
               📅 {obtenerFechaHoy()}
             </p>
 
+            {/* Botón Agregar Manual */}
+            <button
+              style={{
+                width: "100%",
+                padding: "12px",
+                marginBottom: "15px",
+                borderRadius: "25px",
+                border: "none",
+                backgroundColor: "blueviolet",
+                color: "white",
+                fontWeight: "bold",
+                cursor: "pointer",
+                boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
+              }}
+              onClick={() => setModalAbierto(true)}
+            >
+              ➕ Agregar Manual
+            </button>
+
             {listaCompras.length === 0 ? (
               <p style={{ textAlign: "center", color: "blueviolet" }}>
                 🛒 No hay productos en la lista
@@ -537,6 +579,178 @@ const Comprashome = () => {
           </div>
 
           <h3 className="totlcop">Total productos: {listaCompras.length}</h3>
+        </div>
+      )}
+
+      {/* Modal Agregar Manual */}
+      {modalAbierto && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.6)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+          }}
+          onClick={() => setModalAbierto(false)}
+        >
+          <div
+            style={{
+              backgroundColor: "white",
+              borderRadius: "20px",
+              padding: "20px",
+              width: "90%",
+              maxWidth: "400px",
+              maxHeight: "80vh",
+              overflow: "hidden",
+              display: "flex",
+              flexDirection: "column",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "15px",
+              }}
+            >
+              <h2 style={{ color: "blueviolet", margin: 0 }}>
+                📦 Buscar Producto
+              </h2>
+              <button
+                onClick={() => {
+                  setModalAbierto(false);
+                  setBusquedaModal("");
+                }}
+                style={{
+                  backgroundColor: "#dc3545",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: "30px",
+                  height: "30px",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <input
+              type="text"
+              placeholder="🔍 Buscar por nombre..."
+              value={busquedaModal}
+              onChange={(e) => setBusquedaModal(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "12px",
+                borderRadius: "25px",
+                border: "2px solid blueviolet",
+                marginBottom: "15px",
+                fontSize: "1rem",
+                boxSizing: "border-box",
+              }}
+              autoFocus
+            />
+
+            <div style={{ flex: 1, overflowY: "auto", maxHeight: "50vh" }}>
+              {busquedaModal.length < 2 ? (
+                <p
+                  style={{
+                    textAlign: "center",
+                    color: "blueviolet",
+                    padding: "20px",
+                  }}
+                >
+                  Escribe al menos 2 letras para buscar...
+                </p>
+              ) : productosFiltradosModal.length === 0 ? (
+                <p
+                  style={{
+                    textAlign: "center",
+                    color: "blueviolet",
+                    padding: "20px",
+                  }}
+                >
+                  No se encontraron productos
+                </p>
+              ) : (
+                productosFiltradosModal.map((producto) => (
+                  <div
+                    key={producto.codigoUnico || producto.nombre}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "12px",
+                      marginBottom: "10px",
+                      backgroundColor: "rgba(138, 43, 226, 0.1)",
+                      borderRadius: "10px",
+                      border: "1px solid rgba(138, 43, 226, 0.3)",
+                    }}
+                  >
+                    <div style={{ flex: 1 }}>
+                      <p
+                        style={{
+                          fontWeight: "bold",
+                          color: "blueviolet",
+                          margin: 0,
+                        }}
+                      >
+                        {producto.nombre}
+                      </p>
+                      <p
+                        style={{
+                          fontSize: "0.8rem",
+                          color: "#666",
+                          margin: "5px 0 0 0",
+                        }}
+                      >
+                        Stock: {producto.cantidadExistente || 0}{" "}
+                        {producto.unidadDeMedida}
+                      </p>
+                    </div>
+                    {estaEnLista(producto.codigoUnico) ? (
+                      <span
+                        style={{
+                          backgroundColor: "#28a745",
+                          color: "white",
+                          padding: "8px 15px",
+                          borderRadius: "20px",
+                          fontSize: "0.85rem",
+                        }}
+                      >
+                        ✓ En lista
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => agregarALista(producto)}
+                        style={{
+                          backgroundColor: "blueviolet",
+                          color: "white",
+                          border: "none",
+                          padding: "8px 15px",
+                          borderRadius: "20px",
+                          cursor: "pointer",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Agregar
+                      </button>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
         </div>
       )}
 
