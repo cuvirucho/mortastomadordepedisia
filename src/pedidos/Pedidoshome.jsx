@@ -20,11 +20,15 @@ const Pedidoshome = () => {
   // Estado para mostrar/ocultar modal carrito
   const [modalVisible, setModalVisible] = useState(false);
 
+  // Estado para modal de confirmación de pedido agregado
+  const [modalConfirmacion, setModalConfirmacion] = useState(false);
+  const [pedidoAgregado, setPedidoAgregado] = useState(null);
+
   useEffect(() => {
     const cargarPlatos = async () => {
       try {
         const data = await obtenerPlatosComplejos(
-          "principamorasadmi@moritas.com"
+          "principamorasadmi@moritas.com",
         );
         setMenu(data || {});
       } catch (e) {
@@ -36,15 +40,15 @@ const Pedidoshome = () => {
 
   const platosFiltrados = Object.values(menu).filter((plato) =>
     plato.alias.some((nombre) =>
-      nombre.toLowerCase().includes(search.toLowerCase())
-    )
+      nombre.toLowerCase().includes(search.toLowerCase()),
+    ),
   );
 
   const desayunos = platosFiltrados.filter(
-    (plato) => plato.tipo === "desayuno"
+    (plato) => plato.tipo === "desayuno",
   );
   const desatigrillos = platosFiltrados.filter(
-    (plato) => plato.tipo === "tigrillo"
+    (plato) => plato.tipo === "tigrillo",
   );
   const pancakes = platosFiltrados.filter((plato) => plato.tipo === "pancakes");
   const conbos = platosFiltrados.filter((plato) => plato.tipo === "combos");
@@ -97,6 +101,14 @@ const Pedidoshome = () => {
       }));
 
     setOrdenes((prev) => [...prev, ...nuevosPedidos]);
+
+    // Mostrar modal de confirmación
+    setPedidoAgregado({
+      nombre: plato.alias[0],
+      cantidad: cantidad,
+      detalle: Object.keys(detalleFinal).length > 0 ? detalleFinal : null,
+    });
+    setModalConfirmacion(true);
 
     // limpiar estados
     setSelecciones((prev) => {
@@ -364,7 +376,7 @@ const Pedidoshome = () => {
                                     handleSeleccion(
                                       key,
                                       preguntaKey,
-                                      e.target.value
+                                      e.target.value,
                                     )
                                   }
                                 >
@@ -711,6 +723,79 @@ const Pedidoshome = () => {
                 </button>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Modal confirmación pedido agregado */}
+      {modalConfirmacion && pedidoAgregado && (
+        <div
+          onClick={() => setModalConfirmacion(false)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 10000,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: "white",
+              padding: 25,
+              borderRadius: 12,
+              maxWidth: "90%",
+              width: "350px",
+              textAlign: "center",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+            }}
+          >
+            <h2 style={{ color: "#6f00ff", marginBottom: 15 }}>
+              ✅ Pedido Agregado
+            </h2>
+            <p
+              style={{ fontSize: "1.2rem", fontWeight: "bold", color: "#333" }}
+            >
+              {pedidoAgregado.nombre}
+            </p>
+            <p style={{ color: "#666" }}>Cantidad: {pedidoAgregado.cantidad}</p>
+            {pedidoAgregado.detalle && (
+              <ul
+                style={{
+                  listStyle: "none",
+                  padding: 0,
+                  margin: "10px 0",
+                  textAlign: "left",
+                }}
+              >
+                {Object.entries(pedidoAgregado.detalle).map(([k, v]) => (
+                  <li key={k} style={{ color: "#555", marginBottom: 5 }}>
+                    <strong>{k}:</strong> {v}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <button
+              onClick={() => setModalConfirmacion(false)}
+              style={{
+                marginTop: 15,
+                padding: "12px 30px",
+                backgroundColor: "#6f00ff",
+                color: "white",
+                border: "none",
+                borderRadius: 8,
+                fontSize: "1rem",
+                cursor: "pointer",
+              }}
+            >
+              Continuar
+            </button>
           </div>
         </div>
       )}

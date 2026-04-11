@@ -1581,7 +1581,7 @@ ul li p strong {
   overflow-y: auto;
   /* Optimización móvil */
   -webkit-overflow-scrolling: touch;
-  padding-bottom: 80px;
+  padding-bottom: 20px;
 }
 
 /* Tarjetas */
@@ -1590,9 +1590,19 @@ ul li p strong {
   border-radius: 12px;
   padding: 20px;
   width: 90%;
-  margin-bottom: 20px;
+  height: auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.26);
+  transition: transform 0.2s;
+}
+.cardcopras2 {
+  background-color: #940f0f00;
+  border-radius: 12px;
+  padding: 20px;
+  width: 90%;
+  height: auto;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.363);
   transition: transform 0.2s;
+  margin-top: 30px;
 }
 
 /* Titulos */

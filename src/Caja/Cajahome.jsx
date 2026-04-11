@@ -50,7 +50,7 @@ const Cajahome = () => {
         "usuarios",
         "principamorasadmi@moritas.com",
         "Bodega",
-        "ProductosDeComida"
+        "ProductosDeComida",
       );
 
       const snapshot = await getDoc(ref);
@@ -115,6 +115,12 @@ const Cajahome = () => {
       localStorage.removeItem("ingredientesAcumulados");
 
       alert("✅ Día finalizado, bodega actualizada y guardado en Firebase 🚀");
+
+      // Enviar mensaje de WhatsApp con el resumen
+      const mensaje = `✅ *DÍA FINALIZADO*\n\n📅 Fecha: ${new Date().toLocaleDateString("es-EC")}\n\n💰 Total Ventas: $${totalVentas.toFixed(2)}\n🟢 Efectivo: $${totalEfectivo.toFixed(2)}\n🔵 Transferencias: $${totalTransferencias.toFixed(2)}\n💼 Total en Caja: $${totalCaja.toFixed(2)}`;
+      const numeroWhatsApp = "593963200325"; // Cambia por tu número
+      const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+      window.open(urlWhatsApp, "_blank");
     } catch (error) {
       console.error("❌ Error guardando en Firebase:", error);
       alert("Hubo un error al guardar el resumen en Firebase.");
