@@ -16,8 +16,7 @@ const Cajahome = () => {
   const paymentData = JSON.parse(localStorage.getItem("paymentData")) || {};
   const pedidosRealizados =
     JSON.parse(localStorage.getItem("pedidosRealizados")) || [];
-  const ingredientesAcumulados =
-    JSON.parse(localStorage.getItem("ingredientesAcumulados")) || [];
+
   const [compras, setCompras] = useState(() => {
     const comprasGuardadas = localStorage.getItem("compras");
     return comprasGuardadas ? JSON.parse(comprasGuardadas) : [];
@@ -42,46 +41,6 @@ const Cajahome = () => {
 
   const totalCaja = totalVentas - totalTransferencias;
 
-  // ✅ Restar ingredientes usados de la bodega
-  const actualizarBodega = async () => {
-    try {
-      const ref = doc(
-        db,
-        "usuarios",
-        "principamorasadmi@moritas.com",
-        "Bodega",
-        "ProductosDeComida",
-      );
-
-      const snapshot = await getDoc(ref);
-      if (!snapshot.exists()) {
-        console.error("❌ No existe la bodega en Firebase");
-        return;
-      }
-
-      let productos = snapshot.data();
-      const updates = {};
-
-      ingredientesAcumulados.forEach((ing) => {
-        if (productos[ing.nombre]) {
-          let nuevaCantidad =
-            (productos[ing.nombre].cantidadExistente || 0) -
-            (ing.cantidad || 0);
-
-          if (nuevaCantidad < 0) nuevaCantidad = 0;
-          updates[`${ing.nombre}.cantidadExistente`] = nuevaCantidad;
-        }
-      });
-
-      if (Object.keys(updates).length > 0) {
-        await updateDoc(ref, updates);
-        console.log("✅ Bodega actualizada:", updates);
-      }
-    } catch (error) {
-      console.error("❌ Error actualizando bodega:", error);
-    }
-  };
-
   // ✅ Guardar en Firebase y borrar localStorage
   const [cargaDOFIN, setcargaDOFIN] = useState(false);
 
@@ -101,20 +60,18 @@ const Cajahome = () => {
         totalTransferencias,
         totalEfectivo,
         listadecomparas: compras,
-        ingredientesusados: ingredientesAcumulados,
+
         pedidoslocal: pedidosRealizados,
       };
 
       await addDoc(ordersRef, resumen);
-      await actualizarBodega();
 
       localStorage.removeItem("pedidosListos");
       localStorage.removeItem("paymentData");
       localStorage.removeItem("compras");
       localStorage.removeItem("pedidosRealizados");
-      localStorage.removeItem("ingredientesAcumulados");
 
-      alert("✅ Día finalizado, bodega actualizada y guardado en Firebase 🚀");
+      alert("✅ Día finalizado y guardado en Firebase 🚀");
 
       // Enviar mensaje de WhatsApp con el resumen
       const mensaje = `✅ *DÍA FINALIZADO*\n\n📅 Fecha: ${new Date().toLocaleDateString("es-EC")}\n\n💰 Total Ventas: $${totalVentas.toFixed(2)}\n🟢 Efectivo: $${totalEfectivo.toFixed(2)}\n🔵 Transferencias: $${totalTransferencias.toFixed(2)}\n💼 Total en Caja: $${totalCaja.toFixed(2)}`;

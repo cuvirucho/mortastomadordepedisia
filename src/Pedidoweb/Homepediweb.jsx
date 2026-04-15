@@ -1,6 +1,7 @@
 import {
   collection,
   doc,
+  getDoc,
   onSnapshot,
   orderBy,
   query,
@@ -41,18 +42,50 @@ const Homepediweb = () => {
 
   /*INGEDIENTE USADOS  */
 
+  const actualizarBodega = async (ingredientesAcumulados) => {
+    try {
+      const ref = doc(
+        db,
+        "usuarios",
+        "principamorasadmi@moritas.com",
+        "Bodega",
+        "ProductosDeComida",
+      );
+
+      const snapshot = await getDoc(ref);
+      if (!snapshot.exists()) {
+        console.error("❌ No existe la bodega en Firebase");
+        return;
+      }
+
+      let productos = snapshot.data();
+      const updates = {};
+
+      ingredientesAcumulados.forEach((ing) => {
+        if (productos[ing.nombre]) {
+          let nuevaCantidad =
+            (productos[ing.nombre].cantidadExistente || 0) -
+            (ing.cantidad || 0);
+
+          if (nuevaCantidad < 0) nuevaCantidad = 0;
+          updates[`${ing.nombre}.cantidadExistente`] = nuevaCantidad;
+        }
+      });
+
+      if (Object.keys(updates).length > 0) {
+        await updateDoc(ref, updates);
+        console.log("✅ Bodega actualizada:", updates);
+      }
+    } catch (error) {
+      console.error("❌ Error actualizando bodega:", error);
+    }
+  };
+
   const ingedyresusa = (pedido) => {
     // --- Guardar ingredientes acumulados ---
-    let ingredientesPrevios =
-      JSON.parse(localStorage.getItem("ingredientesAcumulados")) || [];
+    let ingredientesPrevios = [];
 
     let mapaIngredientes = {};
-    ingredientesPrevios.forEach((ing) => {
-      mapaIngredientes[ing.nombre] = {
-        ...ing,
-        cantidad: parseFloat(ing.cantidad),
-      };
-    });
 
     // 👇 ahora recorremos el carrito de un solo pedido
     if (pedido.cart) {
@@ -73,10 +106,7 @@ const Homepediweb = () => {
     }
 
     const ingredientesActualizados = Object.values(mapaIngredientes);
-    localStorage.setItem(
-      "ingredientesAcumulados",
-      JSON.stringify(ingredientesActualizados),
-    );
+    actualizarBodega(ingredientesActualizados);
   };
 
   // Calcular inicio y fin del día

@@ -2,7 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navar from "../utilidales/Navar";
 import { db } from "../Firebase/Firebase";
-import { addDoc, collection, doc, getDocs } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  getDoc,
+  updateDoc,
+  query,
+  where,
+} from "firebase/firestore";
 
 const Mesashome = () => {
   const { numero } = useParams();
@@ -19,7 +28,7 @@ const Mesashome = () => {
 
   const [tipoPago, setTipoPago] = useState(null);
   const [pagosPorItem, setPagosPorItem] = useState(
-    JSON.parse(localStorage.getItem("pagosPorItem")) || {}
+    JSON.parse(localStorage.getItem("pagosPorItem")) || {},
   );
 
   // 🔹 nuevos estados para el modal del vuelto
@@ -56,7 +65,7 @@ const Mesashome = () => {
     setItemsSeleccionados(nuevosSeleccionados);
     localStorage.setItem(
       "itemsSeleccionados",
-      JSON.stringify(nuevosSeleccionados)
+      JSON.stringify(nuevosSeleccionados),
     );
 
     const nuevosPagados = pagados.filter((i) => i !== id);
@@ -223,7 +232,7 @@ const Mesashome = () => {
 
   const totalPedido = pedido.reduce(
     (sum, p) => sum + Number(p.precioVenta || 0),
-    0
+    0,
   );
 
   const totalPagado = pedido
@@ -234,6 +243,96 @@ const Mesashome = () => {
 
   const [cargaDOFIN, setcargaDOFIN] = useState(false);
 
+  /*actulisrbodegas*/
+
+  const actualizarBodega = async (ingredientesAcumulados) => {
+    try {
+      const ref = doc(
+        db,
+        "usuarios",
+        "principamorasadmi@moritas.com",
+        "Bodega",
+        "ProductosDeComida",
+      );
+
+      const snapshot = await getDoc(ref);
+      if (!snapshot.exists()) {
+        console.error("❌ No existe la bodega en Firebase");
+        return;
+      }
+
+      let productos = snapshot.data();
+      const updates = {};
+
+      ingredientesAcumulados.forEach((ing) => {
+        if (productos[ing.nombre]) {
+          let nuevaCantidad =
+            (productos[ing.nombre].cantidadExistente || 0) -
+            (ing.cantidad || 0);
+
+          if (nuevaCantidad < 0) nuevaCantidad = 0;
+          updates[`${ing.nombre}.cantidadExistente`] = nuevaCantidad;
+        }
+      });
+
+      if (Object.keys(updates).length > 0) {
+        await updateDoc(ref, updates);
+        console.log("✅ Bodega actualizada:", updates);
+      }
+    } catch (error) {
+      console.error("❌ Error actualizando bodega:", error);
+    }
+  };
+
+  const guardarIngredientesGastados = async (ingredientesAcumulados) => {
+    try {
+      const userDocRef = doc(db, "usuarios", "principamorasadmi@moritas.com");
+      const ingredientesGastosRef = collection(
+        userDocRef,
+        "ingredientesgastos",
+      );
+
+      for (const ing of ingredientesAcumulados) {
+        const costoUnitario = ing.costo || 0;
+        const cantidadUsada = ing.cantidad || 0;
+        const costoTotal = costoUnitario * cantidadUsada;
+
+        // Buscar si ya existe un documento con este nombre de ingrediente
+        const q = query(
+          ingredientesGastosRef,
+          where("nombre", "==", ing.nombre),
+        );
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          // Si existe, acumular la cantidad y el costo
+          const docExistente = querySnapshot.docs[0];
+          const dataExistente = docExistente.data();
+
+          await updateDoc(docExistente.ref, {
+            cantidadUsada: (dataExistente.cantidadUsada || 0) + cantidadUsada,
+            costoTotal: (dataExistente.costoTotal || 0) + costoTotal,
+            ultimaActualizacion: new Date(),
+          });
+        } else {
+          // Si no existe, crear nuevo documento
+          await addDoc(ingredientesGastosRef, {
+            nombre: ing.nombre,
+            cantidadUsada: cantidadUsada,
+            costoUnitario: costoUnitario,
+            costoTotal: costoTotal,
+            fechaCreacion: new Date(),
+            ultimaActualizacion: new Date(),
+          });
+        }
+      }
+
+      console.log("✅ Ingredientes gastados guardados en Firebase");
+    } catch (error) {
+      console.error("❌ Error guardando ingredientes gastados:", error);
+    }
+  };
+
   const finalizarPedido = async () => {
     if (pedido.length === 0) return;
     setcargaDOFIN(true);
@@ -243,8 +342,7 @@ const Mesashome = () => {
     const nuevosPedidos = [...pedidosPrevios, ...pedido];
     localStorage.setItem("pedidosRealizados", JSON.stringify(nuevosPedidos));
 
-    let ingredientesPrevios =
-      JSON.parse(localStorage.getItem("ingredientesAcumulados")) || [];
+    let ingredientesPrevios = [];
 
     let mapaIngredientes = {};
     ingredientesPrevios.forEach((ing) => {
@@ -269,14 +367,14 @@ const Mesashome = () => {
     });
 
     const ingredientesActualizados = Object.values(mapaIngredientes);
-    localStorage.setItem(
-      "ingredientesAcumulados",
-      JSON.stringify(ingredientesActualizados)
-    );
+    console.log(ingredientesActualizados);
 
     try {
       const userDocRef = doc(db, "usuarios", "principamorasadmi@moritas.com");
       const ordersRef = collection(userDocRef, "orders");
+
+      await actualizarBodega(ingredientesActualizados);
+      await guardarIngredientesGastados(ingredientesActualizados);
 
       await addDoc(ordersRef, {
         pedido,
@@ -312,7 +410,7 @@ const Mesashome = () => {
         pagados,
         restante,
         pagosPorItem,
-      })
+      }),
     );
     navigate(`/factura/${numero}`);
   };
@@ -392,14 +490,14 @@ const Mesashome = () => {
                               <ul className="respuesta-sublista">
                                 {Object.entries(valor).map(
                                   ([subClave, subValor], i) =>
-                                    subValor && <li key={i}>{subClave}</li>
+                                    subValor && <li key={i}>{subClave}</li>,
                                 )}
                               </ul>
                             ) : (
                               <span> {String(valor)}</span>
                             )}
                           </li>
-                        )
+                        ),
                       )}
                     </ul>
                   ) : p.detalle ? (
@@ -446,7 +544,35 @@ const Mesashome = () => {
             {restante === 0 && (
               <div>
                 {cargaDOFIN ? (
-                  <p className="tilomes">Procesando...</p>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: "20px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "50px",
+                        height: "50px",
+                        border: "5px solid #f3f3f3",
+                        borderTop: "5px solid #14ca3e",
+                        borderRadius: "50%",
+                        animation: "spin 1s linear infinite",
+                      }}
+                    />
+                    <style>
+                      {`@keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                      }`}
+                    </style>
+                    <p className="tilomes" style={{ marginTop: "15px" }}>
+                      Finalizando pedido...
+                    </p>
+                  </div>
                 ) : (
                   <section className="contvtn">
                     <button onClick={finalizarPedido} className="btnfindpi">
@@ -624,7 +750,9 @@ const Mesashome = () => {
           <div className="modal">
             <h3>
               Hay que cobrar{" "}
-              {totalParcial ? totalParcial.toFixed(2) : totalPedido.toFixed(2)}{" "}
+              {totalParcial
+                ? totalParcial.toFixed(2)
+                : totalPedido.toFixed(2)}{" "}
             </h3>
             <h3>
               Ingrese el monto recibido (
