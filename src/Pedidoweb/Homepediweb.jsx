@@ -342,8 +342,19 @@ const Homepediweb = () => {
                 <span
                   className={`etiqueta-entrega ${pedido.coords ? "para-llevar" : "para-retirar"}`}
                 >
-                  {pedido.coords ? "🛵 Para llevar" : "🏪 Para retirar"}
+                  {pedido.coords
+                    ? "🛵 Para llevar"
+                    : "🏪 Para retirar en local"}
                 </span>
+                {pedido.coords && pedido?.payphoneResponse?.phoneNumber && (
+                  <a
+                    href={`tel:${pedido.payphoneResponse.phoneNumber}`}
+                    className="btn-llamar"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    📞 Llamar al cliente
+                  </a>
+                )}
               </div>
 
               <div className="pedido-info">

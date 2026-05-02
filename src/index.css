@@ -1307,6 +1307,10 @@ ul li p strong {
 /* Etiqueta tipo de entrega */
 .tipo-entrega {
   margin: 8px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
 }
 
 .etiqueta-entrega {
@@ -1327,6 +1331,24 @@ ul li p strong {
   background: linear-gradient(135deg, #2196f3, #1565c0);
   color: white;
   box-shadow: 0 2px 8px rgba(33, 150, 243, 0.4);
+}
+
+.btn-llamar {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #ff9800, #e65100);
+  color: white;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(255, 152, 0, 0.4);
+  cursor: pointer;
+}
+
+.btn-llamar:hover {
+  opacity: 0.88;
 }
 
 /* Modal tipo de entrega */
