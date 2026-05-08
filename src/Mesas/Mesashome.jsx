@@ -11,6 +11,7 @@ import {
   updateDoc,
   query,
   where,
+  increment,
 } from "firebase/firestore";
 
 const Mesashome = () => {
@@ -383,6 +384,13 @@ const Mesashome = () => {
         estado: "pagada",
         createdAt: new Date(),
         pagosPorItem,
+      });
+
+      // 👇 SUMAR PUNTOS
+      const personalRef = doc(db, "personal", "principamorasadmi");
+
+      await updateDoc(personalRef, {
+        puntos: increment(1),
       });
 
       borrarMesa();
