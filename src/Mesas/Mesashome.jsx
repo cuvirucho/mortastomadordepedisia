@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navar from "../utilidales/Navar";
 import { db } from "../Firebase/Firebase";
@@ -243,6 +243,7 @@ const Mesashome = () => {
   const restante = totalPedido - totalPagado;
 
   const [cargaDOFIN, setcargaDOFIN] = useState(false);
+  const finalizandoRef = useRef(false);
 
   /*actulisrbodegas*/
 
@@ -336,14 +337,11 @@ const Mesashome = () => {
 
   const finalizarPedido = async () => {
     if (pedido.length === 0) return;
+    if (finalizandoRef.current) return;
+    finalizandoRef.current = true;
     setcargaDOFIN(true);
 
-    const pedidosPrevios =
-      JSON.parse(localStorage.getItem("pedidosRealizados")) || [];
-    const nuevosPedidos = [...pedidosPrevios, ...pedido];
-    localStorage.setItem("pedidosRealizados", JSON.stringify(nuevosPedidos));
-
-    let ingredientesPrevios = [];
+    /*  let ingredientesPrevios = [];
 
     let mapaIngredientes = {};
     ingredientesPrevios.forEach((ing) => {
@@ -368,30 +366,37 @@ const Mesashome = () => {
     });
 
     const ingredientesActualizados = Object.values(mapaIngredientes);
-    console.log(ingredientesActualizados);
+    console.log(ingredientesActualizados); */
 
     try {
       const userDocRef = doc(db, "usuarios", "principamorasadmi@moritas.com");
       const ordersRef = collection(userDocRef, "orders");
+      /* 
+   await Promise.all([
+        actualizarBodega(ingredientesActualizados),
+        guardarIngredientesGastados(ingredientesActualizados),
+      ]);*/
 
-      await actualizarBodega(ingredientesActualizados);
-      await guardarIngredientesGastados(ingredientesActualizados);
-
-      await addDoc(ordersRef, {
-        pedido,
-        total: totalPedido,
-        mesa: numero,
-        estado: "pagada",
-        createdAt: new Date(),
-        pagosPorItem,
-      });
-
-      // 👇 SUMAR PUNTOS
       const personalRef = doc(db, "personal", "principamorasadmi");
 
-      await updateDoc(personalRef, {
-        puntos: increment(1),
-      });
+      await Promise.all([
+        addDoc(ordersRef, {
+          pedido,
+          total: totalPedido,
+          mesa: numero,
+          estado: "pagada",
+          createdAt: new Date(),
+          pagosPorItem,
+        }),
+        updateDoc(personalRef, {
+          puntos: increment(1),
+        }),
+      ]);
+
+      const pedidosPrevios =
+        JSON.parse(localStorage.getItem("pedidosRealizados")) || [];
+      const nuevosPedidos = [...pedidosPrevios, ...pedido];
+      localStorage.setItem("pedidosRealizados", JSON.stringify(nuevosPedidos));
 
       borrarMesa();
       resetPagados();
@@ -404,6 +409,7 @@ const Mesashome = () => {
       console.error("❌ Error guardando pedido en Firebase:", error);
       alert("Hubo un error al guardar en Firebase");
     } finally {
+      finalizandoRef.current = false;
       setcargaDOFIN(false);
     }
   };

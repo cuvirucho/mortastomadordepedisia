@@ -4,9 +4,9 @@ import { db } from "../Firebase/Firebase";
 import Navar from "../utilidales/Navar";
 
 const METAS = [
-  { puntos: 550, nivel: 1, label: "Pase Dorado Bronce", emoji: "🥉" },
-  { puntos: 900, nivel: 2, label: "Pase Dorado Plata", emoji: "🥈" },
-  { puntos: 1200, nivel: 3, label: "Pase Dorado ORO", emoji: "🏆" },
+  { puntos: 650, nivel: 1, label: "Pase Dorado Bronce", emoji: "🥉" },
+  { puntos: 950, nivel: 2, label: "Pase Dorado Plata", emoji: "🥈" },
+  { puntos: 1250, nivel: 3, label: "Pase Dorado ORO", emoji: "🏆" },
 ];
 
 const Personalhome = () => {
