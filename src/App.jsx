@@ -8,8 +8,12 @@ import Comprashome from "./Compras/Comprashome";
 import Cajahome from "./Caja/Cajahome";
 import Homefactura from "./Facturas/Homefactura";
 import Personalhome from "./Personalpoints/Personalhome";
+import { useEffect } from "react";
+import { escucharPedidosMesas } from "./Firebase/PedidosMesa";
 
 function App() {
+  useEffect(() => escucharPedidosMesas(), []);
+
   return (
     <BrowserRouter>
       <Routes>

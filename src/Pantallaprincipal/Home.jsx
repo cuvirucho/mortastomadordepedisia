@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { EVENTO_MESAS } from "../Firebase/PedidosMesa";
 import { Link, useNavigate } from "react-router-dom";
 import { obtenerPlatosComplejos } from "../Firebase/PlatosComplejos";
 import Navar from "../utilidales/Navar";
@@ -12,6 +13,14 @@ const Home = () => {
   };
 
   const mesas = [1, 2, 3, 4];
+
+  // 🔹 Re-renderizar cuando Firebase actualice las mesas en localStorage
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const refrescar = () => setTick((t) => t + 1);
+    window.addEventListener(EVENTO_MESAS, refrescar);
+    return () => window.removeEventListener(EVENTO_MESAS, refrescar);
+  }, []);
 
   return (
     <section className="contfllhome">

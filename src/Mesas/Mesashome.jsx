@@ -13,6 +13,11 @@ import {
   where,
   increment,
 } from "firebase/firestore";
+import {
+  EVENTO_MESAS,
+  eliminarPedidoMesa,
+  guardarPedidoMesa,
+} from "../Firebase/PedidosMesa";
 
 const Mesashome = () => {
   const { numero } = useParams();
@@ -43,6 +48,20 @@ const Mesashome = () => {
     if (data) setPedido(JSON.parse(data));
   }, [numero]);
 
+  // 🔹 Refrescar si Firebase actualizó el localStorage de esta mesa
+  useEffect(() => {
+    const refrescar = () => {
+      try {
+        const data = JSON.parse(localStorage.getItem(`mesa${numero}`));
+        setPedido(Array.isArray(data) ? data : []);
+      } catch {
+        setPedido([]);
+      }
+    };
+    window.addEventListener(EVENTO_MESAS, refrescar);
+    return () => window.removeEventListener(EVENTO_MESAS, refrescar);
+  }, [numero]);
+
   useEffect(() => {
     const seleccionados =
       JSON.parse(localStorage.getItem("itemsSeleccionados")) || [];
@@ -54,6 +73,7 @@ const Mesashome = () => {
 
   const borrarMesa = () => {
     localStorage.removeItem(`mesa${numero}`);
+    eliminarPedidoMesa(numero);
     setPedido([]);
   };
 
@@ -61,6 +81,7 @@ const Mesashome = () => {
     const nuevoPedido = pedido.filter((p) => p.id !== id);
     setPedido(nuevoPedido);
     localStorage.setItem(`mesa${numero}`, JSON.stringify(nuevoPedido));
+    guardarPedidoMesa(numero, nuevoPedido);
 
     const nuevosSeleccionados = itemsSeleccionados.filter((i) => i !== id);
     setItemsSeleccionados(nuevosSeleccionados);
@@ -170,6 +191,7 @@ const Mesashome = () => {
     setPagosPorItem(nuevosPagos);
     setPedido(nuevoPedido);
     localStorage.setItem(`mesa${numero}`, JSON.stringify(nuevoPedido));
+    guardarPedidoMesa(numero, nuevoPedido);
     localStorage.setItem("pagados", JSON.stringify(nuevosPagados));
     localStorage.setItem("pagosPorItem", JSON.stringify(nuevosPagos));
 
@@ -196,6 +218,7 @@ const Mesashome = () => {
     setPagosPorItem(nuevosPagos);
     setPedido(nuevoPedido);
     localStorage.setItem(`mesa${numero}`, JSON.stringify(nuevoPedido));
+    guardarPedidoMesa(numero, nuevoPedido);
     localStorage.setItem("pagados", JSON.stringify(todosIds));
     localStorage.setItem("pagosPorItem", JSON.stringify(nuevosPagos));
 

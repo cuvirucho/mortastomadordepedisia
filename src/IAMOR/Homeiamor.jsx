@@ -4,6 +4,7 @@ import { useProcesadorTexto } from "./Prosedordetexto";
 import CaritaRobot from "./Caradeia";
 import RobotAnimado from "./Animararitahome";
 import { obtenerPlatosComplejos } from "../Firebase/PlatosComplejos";
+import { guardarPedidoMesa } from "../Firebase/PedidosMesa";
 import { useNavigate, useParams } from "react-router-dom";
 
 // Detectar si es móvil para ajustar comportamiento
@@ -480,8 +481,14 @@ const Homeiamor = () => {
     setOrdenes([]);
     ordenesRef.current = [];
 
-    navigate(`/mesa/${numero}`);
-    window.location.reload();
+    // Guardar/actualizar en Firebase; esperar un poco antes del reload
+    Promise.race([
+      guardarPedidoMesa(numero, pedidosCombinados, pedidoExistente.length === 0),
+      new Promise((r) => setTimeout(r, 1500)),
+    ]).finally(() => {
+      navigate(`/mesa/${numero}`);
+      window.location.reload();
+    });
   };
 
   /*elimnar unaorden */

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { obtenerPlatosComplejos } from "../Firebase/PlatosComplejos";
 import Navar from "../utilidales/Navar";
+import { guardarPedidoMesa } from "../Firebase/PedidosMesa";
 
 const Pedidoshome = () => {
   const [menu, setMenu] = useState({});
@@ -156,6 +157,9 @@ const Pedidoshome = () => {
 
     // Guardar la combinación en localStorage
     localStorage.setItem(`mesa${numero}`, JSON.stringify(pedidosCombinados));
+
+    // Guardar/actualizar también en Firebase (colección pedidos)
+    guardarPedidoMesa(numero, pedidosCombinados, pedidoExistente.length === 0);
 
     setOrdenes([]);
     ira(); // Redirigir a la mesa actual
