@@ -643,9 +643,6 @@ const Mesashome = () => {
           <article className="pedido-vacio">
             <h3>No hay pedido para esta mesa.</h3>
             <p>Haz clic en “Agregar pedido” para comenzar.</p>
-            <button className="btn" onClick={() => navigate(`/ia/${numero}`)}>
-              Pedido por IA
-            </button>
             <button
               className="btn"
               onClick={() => navigate(`/ordentradi/${numero}`)}
@@ -661,9 +658,6 @@ const Mesashome = () => {
         <div className="modal-overlay">
           <div className="modal">
             <h3>¿Cuál método de pedido prefieres?</h3>
-            <button onClick={() => navigate(`/ia/${numero}`)}>
-              Pedido por IA
-            </button>
             <button onClick={() => navigate(`/ordentradi/${numero}`)}>
               Pedido tradicional
             </button>

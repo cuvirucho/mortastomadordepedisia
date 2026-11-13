@@ -1,5 +1,4 @@
 import "./App.css";
-import Homeiamor from "./IAMOR/Homeiamor";
 import Mesashome from "./Mesas/Mesashome";
 import Home from "./Pantallaprincipal/Home";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -18,7 +17,6 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/ia/:numero" element={<Homeiamor />} />
         <Route path="/mesa/:numero" element={<Mesashome />} />
         <Route path="/factura/:numero" element={<Homefactura />} />
         <Route path="/personal" element={<Personalhome />} />

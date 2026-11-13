@@ -8,10 +8,6 @@ import Homepediweb from "../Pedidoweb/Homepediweb";
 const Home = () => {
   const navigate = useNavigate();
 
-  const irAIa = () => {
-    navigate("/ia"); // Ruta que definiste en App
-  };
-
   const mesas = [1, 2, 3, 4];
 
   // 🔹 Re-renderizar cuando Firebase actualice las mesas en localStorage
