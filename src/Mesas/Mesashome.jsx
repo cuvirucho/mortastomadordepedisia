@@ -647,7 +647,7 @@ const Mesashome = () => {
               className="btn"
               onClick={() => navigate(`/ordentradi/${numero}`)}
             >
-              Pedido tradicional
+              Agregar pedido
             </button>
           </article>
         )}
